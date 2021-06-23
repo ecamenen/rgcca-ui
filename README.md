@@ -1,9 +1,9 @@
-# R/SGCCA 
+# R/SGCCA in command-line and Shiny graphical interface
 
-##### Version: 3.0.0
+##### Version: 1.0.0
 
-##### Authors: 
-Arthur TENENHAUS, Etienne CAMENEN,  Anatole BOURRELIER, Caroline PELTIER & Vincent GUILLEMOT
+##### Author: 
+Etienne CAMENEN
 
 ##### Key-words: 
 omics, RGCCA, multi-block
@@ -12,7 +12,7 @@ omics, RGCCA, multi-block
 analysis, correlation, visualisation
 
 ##### Contact: 
-arthur.tenenhaus@l2s.centralesupelec.fr
+etienne.camenen@gmail.com
 
 ##### Short description
 Performs multi-variate analysis (PCA, CCA, PLS, R/SGCCA, etc.) and produces textual and graphical outputs (e.g. variables and individuals plots).
@@ -53,7 +53,7 @@ The second generation RGCCA ([1]) subsumes fifty years of multiblock component m
 The quality and interpretability of the RGCCA block components yj = Xj . aj, j = 1,...,J are likely affected by the usefulness and relevance of the variables of each block. Accordingly, it is an important issue to identify within each block a subset of significant variables which are active in the relationships between blocks. **SGCCA** extends RGCCA to address this issue of variable selection. Specifically, RGCCA with all τj = 1 equal to 1 is combined with an L1-penalty that gives rise to SGCCA [5]. The SGCCA optimization problem is defined with sj, a user defined positive constant that determines the amount of sparsity for aj, j = 1,...,J. The smaller the sj, the larger the degree of sparsity for aj. The sparsity parameter sj is usually set based on cross-validation procedures. Alternatively, values of sj can simply be chosen to result in desired amounts of sparsity.
 
 ## Input files
-(see ```int/extdata/``` folder for a [working example](https://github.com/BrainAndSpineInstitute/rgcca_Rpackage/tree/master/inst/extdata)).
+(see ```int/extdata/``` folder for a [working example](https://github.com/BrainAndSpineInstitute/rgcca_ui/tree/master/inst/extdata)).
 - ```blocks``` (.tsv, .csv, .txt or .xls, xlsx): one or multiple required file(s) with the columns separated by tabulations (or semi-colons). Each file corresponds to a block containing only quantitative values with "NA" for missing data and "." for decimal separators (**Fig. 1**). Individuals should be in rows, labelled in the first column with the same name between each block (some samples could be missing in some blocks). Variables should be in columns with a header and no duplication in variable names (between and within blocks).
 
 ![blocks](img/blocks.png)
@@ -120,16 +120,18 @@ The quality and interpretability of the RGCCA block components yj = Xj . aj, j =
 
 ## Installation
 Required:
-- Softwares : R (≥ 3.2.0)
+- Softwares : R (≥ 3.3.0)
 - R libraries : see the [DESCRIPTION](https://github.com/BrainAndSpineInstitute/rgcca_Rpackage/blob/master/DESCRIPTION) file.
 
 ### Linux
 
 ```
 sudo apt-get install -y git r-base && \
-    R -e 'install.packages(c("RGCCA", "ggplot2", "optparse", "scales", "igraph", "shiny", "Deriv", "ggrepel", "openxlsx")' && \
-    git clone https://github.com/rgcca-factory/RGCCA && \
-	cd RGCCA
+    R -e 'install.packages(c("ggplot2", "optparse", "scales", "igraph", "shiny", "Deriv", "ggrepel", "openxlsx", "pbapply", "devtools", "shinyjs", "plotly", "visNetwork", "DT")' && \
+    R -e 'devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")' && \
+    R -e 'install.packages(c("shinyjs", "plotly", "visNetwork", "DT") && \
+    git clone https://github.com/BrainAndSpineInstitute/rgcca_ui && \
+	cd rgcca_ui
 ```
 
 On Ubuntu, if dependencies errors appear for igraph and plotly, try :
@@ -139,39 +141,18 @@ sudo apt-get install -y libxml2-dev libcurl4-openssl-dev libssl-dev liblapack-de
 ```
 
 ### Windows & Mac
-Please, find the software on [Github](https://github.com/BrainAndSpineInstitute/rgcca_Rpackage). Click on the green button in the upper right corner ```Clone and Download``` and then ```Download the ZIP```. Extract the file.
+Please, find the software on [Github](https://github.com/BrainAndSpineInstitute/rgcca_ui). Click on the green button in the upper right corner ```Clone and Download``` and then ```Download the ZIP```. Extract the file.
 
 
 ## Execution
-If the Linux dependencies installation step was not executed previously (e.g., for Windows users), their automatic installation could take several minutes during the first execution. If dependencies compatibility errors appear, the required (and suggested) librairies to import are listed in the [DESCRIPTION](https://github.com/BrainAndSpineInstitute/rgcca_Rpackage/blob/master/DESCRIPTION) file.
+If the Linux dependencies installation step was not executed previously (e.g., for Windows users), their automatic installation could take several minutes during the first execution. If dependencies compatibility errors appear, the required (and suggested) librairies to import are listed in the [RGCCA DESCRIPTION](https://github.com/BrainAndSpineInstitute/rgcca_Rpackage/blob/master/DESCRIPTION) file.
 
 
 ### Shiny interface
-- Required: shiny, shinyjs, devtools, bsplus (R packages)
 
 [Shiny](https://shiny.rstudio.com/) is a R framework providing a "user-friendly" web interface. When a parameter of the analysis is modified (e.g. the block to visualize), its impact can be directly observed on the graphical outputs.
 
-After installing [Rstudio](https://www.rstudio.com/products/rstudio/download/#download), open ```inst/shiny/server.R``` file with it. In the RStudio upper menu, go to "Tools", "Install packages" and write "shiny" in the textual field. Then, the application could be launched by clicking on the ```Run App button``` in the upper right corner of the script menu bar. Click [here](https://github.com/rgcca-factory/RGCCA/blob/release/3.0.0/inst/shiny/tutorialShiny.md) to read the tutorial.
-
-
-### Vignette
-- Required: markdown, pander (R packages)
-- Suggested: LateX
-
-A [vignette](http://r-pkgs.had.co.nz/vignettes.html) is a practical use of the software (with detailed examples). It is usually writen in [R Markdown](https://rmarkdown.rstudio.com/), a notebook interface including text or pieces of code that could be dynamically executed.
-
-On Linux:
-```	
-R -e 'install.packages(c("markdown", "pander"))' && \
-    sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-science
-```
-
-On Windows:
-- Install [MikTeX](https://miktex.org/download) (All downloads >> Net Installer).
-- In the RStudio upper menu, go to "Tools", "Install packages" and write "markdown" in the textual field. Do the same for "pander".
-
-Please, find the Rmarkdown working example at ```vignettes/vignette_rgcca.Rmd```.
-
+After installing [Rstudio](https://www.rstudio.com/products/rstudio/download/#download), open ```inst/shiny/server.R``` file with it. In the RStudio upper menu, go to "Tools", "Install packages" and write "shiny" in the textual field. Then, the application could be launched by clicking on the ```Run App button``` in the upper right corner of the script menu bar. Click [here](https://github.com/BrainAndSpineInstitute/rgcca_ui/inst/shiny/tutorialShiny.md) to read the tutorial.
 
 ### Command line
 
