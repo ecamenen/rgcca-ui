@@ -1,6 +1,6 @@
 # Author: Etienne CAMENEN
-# Date: 2020
-# Contact: arthur.tenenhaus@l2s.centralesupelec.fr
+# Date: 2021
+# Contact: etienne.camenen@gmail.com
 # Key-words: omics, RGCCA, multi-block
 # EDAM operation: analysis, correlation, visualisation
 #
@@ -88,7 +88,7 @@ load_libraries(c(
     "devtools"
 ))
 
-if (!("RGCCA" %in% installed.packages()[, "Package"]) || 
+if (!("RGCCA" %in% installed.packages()[, "Package"]) ||
     as.double(paste(unlist(packageVersion("RGCCA"))[1:2], collapse = ".")) < 3.0) {
     devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")
 }
@@ -147,7 +147,7 @@ ui <- fluidPage(
             tabPanel(
                 "RGCCA",
                 uiOutput("analysis_type_custom"),
-                
+
                 uiOutput("scale_custom"),
                 radioButtons(
                     "init",
@@ -167,7 +167,7 @@ ui <- fluidPage(
                     condition = "input.supervised || input.analysis_type == 'RA'",
                     uiOutput("blocks_names_response")),
                 uiOutput("connection_custom"),
-                
+
                 checkboxInput(
                     inputId = "each_ncomp",
                     label = "Number of components for each block",
@@ -323,7 +323,7 @@ ui <- fluidPage(
                 plotlyOutput("cvPlot", height = 700)
                 #actionButton("cv_save", "Save")
             )
-        )   
+        )
 
     ))
 )

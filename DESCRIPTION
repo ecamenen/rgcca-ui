@@ -1,0 +1,27 @@
+Package: rgccaUI
+Title: Shiny graphical interface and command-line for Regularized (or Sparse) Generalized Canonical Correlation Analysis (R/SGCCA)
+Version: 1.0.0
+Authors@R: 
+    person(given = "Camenen",
+           family = "Etienne",
+           role = c("aut", "cre"),
+           email = "etienne.camenen@gmail.com")
+Description: R-Shiny graphical interface (and R-script in command-line) to perform multivariate analysis (PCA, PLS, CCA, R/SGCCA, etc).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+Depends:
+    RGCCA,
+    R (>= 3.3)
+Suggests:
+    testthat
+RoxygenNote: 7.1.1
+Imports:
+    devtools,
+    bsplus,
+    shiny,
+    shinyjs,
+    DT,
+    optparse
+biocViews: Visualization, PrincipalComponent, DimensionReduction, StructuralEquationModels

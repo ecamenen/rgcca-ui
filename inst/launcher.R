@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 
 # Author: Etienne CAMENEN
-# Date: 2020
-# Contact: arthur.tenenhaus@centralesupelec.fr
+# Date: 2021
+# Contact: etienne.camenen@gmail.com
 # Key-words: omics, RGCCA, multi-block
 # EDAM operation: analysis, correlation, visualisation
 #
@@ -77,12 +77,12 @@ get_args <- function() {
             type = "character",
             metavar = "character",
             default = opt[2],
-            help = "Type of analysis [default: %default] (among: rgcca, sgcca, 
-            pca, spca, pls, spls, cca, ifa, ra, gcca, maxvar, maxvar-b, 
-            maxvar-a, mcoa,cpca-1, cpca-2, cpca-4, hpca, maxbet-b, maxbet, 
-            maxdiff-b, maxdiff, maxvar-a, sabscor, ssqcor, ssqcov-1, ssqcov-2, 
-            ssqcov, sumcor, sumcov-1, sumcov-2, sumcov, sabscov, sabscov-1, 
-            sabscov-2)" 
+            help = "Type of analysis [default: %default] (among: rgcca, sgcca,
+            pca, spca, pls, spls, cca, ifa, ra, gcca, maxvar, maxvar-b,
+            maxvar-a, mcoa,cpca-1, cpca-2, cpca-4, hpca, maxbet-b, maxbet,
+            maxdiff-b, maxdiff, maxvar-a, sabscor, ssqcor, ssqcov-1, ssqcov-2,
+            ssqcov, sumcor, sumcov-1, sumcov-2, sumcov, sabscov, sabscov-1,
+            sabscov-2)"
         ),
         make_option(
             opt_str = "--ncomp",
@@ -364,7 +364,7 @@ load_libraries <- function(librairies) {
 load_libraries(c("ggplot2", "optparse", "scales", "igraph", "MASS", "Deriv", "devtools"))
 try(load_libraries("ggrepel"), silent = TRUE)
 
-if (!("RGCCA" %in% installed.packages()[, "Package"]) || 
+if (!("RGCCA" %in% installed.packages()[, "Package"]) ||
     as.double(paste(unlist(packageVersion("RGCCA"))[1:2], collapse = ".")) < 3.0) {
     devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")
 }
@@ -438,7 +438,7 @@ tryCatch({
                 opt$text,
                 opt$block_y,
                 get_filename(opt$group),
-                cex_lab = CEX_LAB, 
+                cex_lab = CEX_LAB,
                 cex_point = CEX_POINT,
                 cex_main = CEX_MAIN,
                 cex = CEX
@@ -456,7 +456,7 @@ tryCatch({
                 opt$block,
                 opt$text,
                 n_mark = opt$nmark,
-                cex_lab = CEX_LAB, 
+                cex_lab = CEX_LAB,
                 cex_point = CEX_POINT,
                 cex_main = CEX_MAIN,
                 cex = CEX
@@ -481,7 +481,7 @@ tryCatch({
 
     # Average Variance Explained
     (ave <- plot_ave(
-        rgcca_out, 
+        rgcca_out,
         cex_main = CEX_MAIN,
         cex_sub = CEX_SUB,
         cex_axis = CEX_AXIS,
