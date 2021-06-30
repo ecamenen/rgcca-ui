@@ -24,7 +24,6 @@ get_args <- function() {
             opt_str = c("-d", "--datasets"),
             type = "character",
             metavar = "path list",
-            default = opt[18],
             help = "List of comma-separated file paths corresponding to the
             blocks to be analyzed (one per block and without spaces between
             them; e.g., path/file1.txt,path/file2.txt) [required]"
@@ -387,12 +386,12 @@ opt$header <- !("header" %in% names(opt))
 opt$superblock <- !("superblock" %in% names(opt))
 opt$scale <- !("scale" %in% names(opt))
 opt$text <- !("text" %in% names(opt))
-CEX_LAB <- 20
-CEX_MAIN <- 25
-CEX_POINT <- 3
-CEX_SUB <- 20
-CEX_AXIS <- 10
-CEX <- 1.25
+cex_lab <- 20
+cex_main <- 25
+cex_point <- 3
+cex_sub <- 20
+cex_axis <- 10
+cex <- 1.25
 
 status <- 0
 tryCatch({
@@ -438,10 +437,10 @@ tryCatch({
                 opt$text,
                 opt$block_y,
                 get_filename(opt$group),
-                cex_lab = CEX_LAB,
-                cex_point = CEX_POINT,
-                cex_main = CEX_MAIN,
-                cex = CEX
+                cex_lab = cex_lab,
+                cex_point = cex_point,
+                cex_main = cex_main,
+                cex = cex
             )
         )
         save_plot(opt$o1, individual_plot)
@@ -456,10 +455,10 @@ tryCatch({
                 opt$block,
                 opt$text,
                 n_mark = opt$nmark,
-                cex_lab = CEX_LAB,
-                cex_point = CEX_POINT,
-                cex_main = CEX_MAIN,
-                cex = CEX
+                cex_lab = cex_lab,
+                cex_point = cex_point,
+                cex_main = cex_main,
+                cex = cex
             )
         )
         save_plot(opt$o2, corcircle)
@@ -472,28 +471,28 @@ tryCatch({
             opt$block,
             type = "loadings",
             title = paste0("Variable correlations", ": ", names(rgcca_out$call$blocks)[opt$block], " with "),
-            cex_sub = CEX_SUB,
-            cex_main = CEX_MAIN,
-            cex_axis = CEX_AXIS,
-            cex = CEX
+            cex_sub = cex_sub,
+            cex_main = cex_main,
+            cex_axis = cex_axis,
+            cex = cex
         )
     save_plot(opt$o3, top_variables)
 
     # Average Variance Explained
     (ave <- plot_ave(
         rgcca_out,
-        cex_main = CEX_MAIN,
-        cex_sub = CEX_SUB,
-        cex_axis = CEX_AXIS,
-        cex = CEX))
+        cex_main = cex_main,
+        cex_sub = cex_sub,
+        cex_axis = cex_axis,
+        cex = cex))
     save_plot(opt$o4, ave)
 
     # Creates design scheme
     design <- function() plot_network(
         rgcca_out,
-        cex_main = CEX_MAIN,
-        cex_point = CEX_POINT,
-        cex = CEX)
+        cex_main = cex_main,
+        cex_point = cex_point,
+        cex = cex)
     save_plot(opt$o5, design)
 
     save_ind(rgcca_out, opt$o6)
