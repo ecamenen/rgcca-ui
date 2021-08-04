@@ -1,5 +1,9 @@
 # R/SGCCA in command-line and Shiny graphical interface
 
+  <!-- badges: start -->
+  [![Codecov test coverage](https://codecov.io/gh/ecamenen-icm/rgcca-ui/branch/master/graph/badge.svg)](https://codecov.io/gh/ecamenen-icm/rgcca-ui?branch=master)
+  <!-- badges: end -->
+  
 ##### Version: 1.0.0
 
 ##### Author: 
