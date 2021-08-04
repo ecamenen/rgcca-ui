@@ -15,7 +15,8 @@ Depends:
     RGCCA,
     R (>= 3.3)
 Suggests:
-    testthat
+    testthat,
+    covr
 RoxygenNote: 7.1.1
 Imports:
     devtools,
