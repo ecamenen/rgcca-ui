@@ -1,5 +1,9 @@
 # R/SGCCA in command-line and Shiny graphical interface
 
+<!-- badges: start -->
+[![Travis build status](https://travis-ci.com/ecamenen-icm/rgcca-ui.svg?branch=develop)](https://travis-ci.com/ecamenen-icm/rgcca-ui)
+<!-- badges: end -->
+
 ##### Version: 1.0.0
 
 ##### Author: 
