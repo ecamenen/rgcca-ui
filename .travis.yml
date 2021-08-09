@@ -4,7 +4,7 @@ language: R
 cache: packages
 
 r:
-- 4.1
+- 4.0
 - 3.6
 - 3.5
 - 3.4
@@ -35,9 +35,12 @@ install:
 script:
 - R -e 'devtools::document()'
 - R CMD build .
-- R CMD check *tar.gz
+- R CMD check *tar.gz --as-cran
 
 after_script:
 - Rscript inst/launcher.R -h
 - Rscript inst/launcher.R -d inst/extdata/agriculture.tsv
 - ls -larth
+
+after_success:
+- Rscript -e 'covr::codecov()'
