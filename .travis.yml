@@ -17,16 +17,24 @@ git:
 #    - master
 
 r_packages:
-- RGCCA
 - ggplot2
+- rmarkdown
+- markdown
 - optparse
 - scales
 - plotly
-- visNetwork
 - igraph
 - ggrepel
 - devtools
-- vegan
+- covr
+- pbapply
+- Deriv
+- graphics
+- stats
+- grDevices
+- parallel
+- methods
+- gridExtra
 
 install:
 - Rscript -e 'install.packages("devtools",repos = "http://cran.wustl.edu")'
