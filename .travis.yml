@@ -1,41 +1,18 @@
-# R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
-
 language: R
+sudo: false
 cache: packages
 
 r:
-- 4.1
+- bioc-release
 - 3.6
 - 3.5
 - 3.4
+- 3.3
 
-git:
-  depth: 1
-
-#branches:
-#  only:
-#    - master
-
-r_packages:
-- RGCCA
-- ggplot2
-- optparse
-- scales
-- plotly
-- visNetwork
-- igraph
-- ggrepel
-- devtools
-- vegan
-
-install:
-- Rscript -e 'install.packages("devtools",repos = "http://cran.wustl.edu")'
-- R -e 'devtools::install_deps(dep = T)'
-
-script:
-- R -e 'devtools::document()'
-- R CMD build .
-- R CMD check *tar.gz
+after_success:
+- tar -C .. -xvf *tar.gz
+- Rscript -e 'covr::package_coverage(quiet = FALSE)'
+- Rscript -e 'covr::codecov()'
 
 after_script:
 - Rscript inst/launcher.R -h
