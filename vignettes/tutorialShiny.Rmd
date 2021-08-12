@@ -1,3 +1,19 @@
+---
+title: "tutorialShiny"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{tutorialShiny}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
 # TUTORIAL FOR RGCCA R-SHINY
 
 ##### Version: 1.0
@@ -5,13 +21,13 @@
 ##### Author: Etienne CAMENEN
 
 ##### Key-words: 
-omics, RGCCA, multi-block
+omics, CCA, multi-block, multi-modal
 
 ##### EDAM operation: 
 analysis, correlation, visualisation
 
 ##### Contact: 
-arthur.tenenhaus@l2s.centralesupelec.fr
+etienne.camenen@gmail.com
 
 ##### Short description
 Performs multi-variate analysis (PCA, CCA, PLS, R/SGCCA, etc.) and produces textual and graphical outputs (e.g. variables and individuals plots).
@@ -71,7 +87,7 @@ This format recommendation could be viewed with **the mouse over the question ma
 By default, the character used in ```column separator``` parameter is the ```tabulation```. Change the separator to another one (e.g.,```semicolon```) to observe an error notification: 
 > "politic block file has only one column. Check the separator."
 
-![load_file_text](../../img/shiny/loadData.png)
+![load_file_text](../img/shiny/loadData.png)
  
 *Fig. 1 : File loading panel (on the top right). The browsing box is used to load the blocks and the last one, to select the column separator.*
 
@@ -84,7 +100,7 @@ The analyse parameters are all set by default and the user could directly click 
 
 After loading the data, a ```RGCCA``` tab will appear (**Fig. 2**). By default, the selected ```analysis method``` is set on ```RGCCA```. This tutorial will be focused on the RGCCA case, but another methods could be selected. When only one block file is loaded in the previous step, a ```PCA``` will be performed. By using two blocks, the interface will allow to select two-blocks analysis method (```PLS``` is selected by default). 
 
-![analysis](../../img/shiny/analysis.png)
+![analysis](../img/shiny/analysis.png)
 
 *Fig. 2 : The second parameter panel shows various options to customize the analysis: choose the analysis and the number of components, scale the blocks, choose a shrinkage, use the superblock or a supervised approach, choose a link function. In this example, the mouse over the question mark of scheme function parameter makes a help message appears*
 
@@ -146,7 +162,7 @@ In cross-validation, the evaluation of the performance of the model is based on 
 
 This parameter tab is observed only with the ```samples```, ```corcircle``` and ```fingerprint``` plot tabs (**Fig. 3**).
 
-![graphic](../../img/shiny/graphicPar.png)
+![graphic](../img/shiny/graphicPar.png)
 
 *Fig. 3 : When the samples tab is selected a graphical option panel appears, that includes: (i) the possibility to hide/print the names of the variables, (ii) the selection of the block to visualize, (iii) the components used in the plots, (iv) the loading of groups of response to color the samples and (v) a button to save all the plot in the folder of the Shiny application. In this example, the agriculture block will be selected as the block for the Y-axis.*
 
@@ -209,14 +225,14 @@ The first tab summarizes the connection between each block: a link corresponds t
 - "N" is the number of lines (here, each block has the same number of line)
 - "tau" is the shrinkage parameter and "sparsity" is the sparsity coefficient (see the [2.4.1 & 2.4.2 sections](https://github.com/rgcca-factory/RGCCA/blob/master/inst/shiny/tutorialShiny.md#24-other-rsgcca-parameters)). The tau parameter could be shown for each component if the optimal option is selected
 
-![connection](../../img/shiny/connection.png)
+![connection](../img/shiny/connection.png)
 
 *Fig. 4 : Connection between each block of the RGCCA and the superblock with 47 common rows between blocks*
 
 ### 4.2. Average variance explained (AVE)
 In the second tab on the right panel, the average variance explained (AVE; in X-axis) is represented in percent for each block (in Y-axis) and each component (one color per component) (**Fig. 5**). The subtitle informs about the AVE for the two first of the outer model (weighted average of the AVE of each block).
 
-![ave](../../img/shiny/ave.png)
+![ave](../img/shiny/ave.png)
 
 *Fig. 5 : Average variance variance explained (in %) for each block and for the two first components of the RGCCA*
 
@@ -224,28 +240,28 @@ In the second tab on the right panel, the average variance explained (AVE; in X-
 The first tab is the projection of the sample coordinates in the selected component of the analysis and, by default, on the
 superblock (a concatenation of all the blocks) (**Fig. 6**). If a ```response``` file is loaded, each sample is colored according to this variable. In the Russet example, the X-axis could discriminate a dictatorship (with upper values on this axis than the two other political systems), whereas the Y axis discriminates an unstable democracy (with upper values than the others).
 
-![individuals](../../img/shiny/samples.png)
+![individuals](../img/shiny/samples.png)
 
 *Fig. 6 : Samples coordinates on the two first components for the superblock of the RGCCA after loading the " political_system.tsv" file. By selecting the option in the header of the plot, a zoom could be done on a selected part of the graph (e.g., the upper right part). Then, all the modifications could be reset with the "house" icon.*
 
 When a cross-validation has been carried out and the graph option has been activated, the graph of individuals allows the actual values of the GCCA (in red) to be contrasted with those predicted by the validation (in green). 
 Here, by selecting a supervised mode with industry as the default response block, we can see that, except for Iraq, the prediction of the leave-one-out is close to reality. The prediction score is the average of the absolute values of the differences between the actual and predicted data centered and reduced. At the start of the cross-validation in the analysis tab, a pop-up indicates a value of 0.0919. This figure can be seen as a percentage difference between predicted and actual data.
 
-![cross-validation](../../img/shiny/cross-validation.png)
+![cross-validation](../img/shiny/cross-validation.png)
 
 *Fig. 7 : With a cross-validation, it is possible to compare his predictions (in green) with the real coordinates of the individuals (in red).*
 
 ### 4.4. Corcircle
 The second one corresponds to the Pearson correlation between the variables of the block and the selected components in the analysis (by default, on the two first components) (**Fig. 7**). The circle is a 1 correlation and the dotted one is a 0.5 correlation. If the superblock is selected, colors correspond to the belonging of each variable to each block. Only the 100th variables the most correlated to each axis are printed.
 
-![corcircle](../../img/shiny/corcircle.png)
+![corcircle](../img/shiny/corcircle.png)
 
 *Fig. 8 : Correlation between each variable of each block (by using the superblock) and the two first components of the RGCCA. The "print names" parameter in the graphical parameter panel is disabled. By flying over a point, an informational label appears. This label gives the name and the X and Y coordinates of the point.*
 
 ### 4.5. Top variables
 The next tab also represents the same correlation of the variable with the selected component (on the X-axis; 1 by default). The top variables are sorted decreasingly (on the Y-axis) in a histogram among the selected block (superblock, by default) (**Fig. 8**). 
 
-![top_variables](../../img/shiny/fingerprint.png)
+![top_variables](../img/shiny/fingerprint.png)
 
 *Fig. 9 : Top 11 variables among all the blocks (by using the superblock) with higher correlation with the first component of the RGCCA. "Gnpr" (belonging to the industry block) shows a correlation of 0.859 with this component.*
 
@@ -259,7 +275,7 @@ The unstable democracy and the land rent fluctuate around 0 and are therefore no
 
 For this type of analysis and the next (permutation), due to a random process, different results can be obtained between two runs. It is advisable to progressively increase the number of runs until the results converge. Here, 100 bootstraps could be enough (~20 seconds to run 1000 bootstrap).
 
-![bootstrap](../../img/shiny/bootstrap.png)
+![bootstrap](../img/shiny/bootstrap.png)
 
 *Fig. 10 : The highest average weight, crossed with the significance, allows the selection of the gross national product as a variable of interest.*
 
@@ -268,6 +284,7 @@ Here, penalties are selected as the choice of parameters to permute and a number
 
 In our example, with a risk of 99.9%, the best choice of combinations is the one with the lowest sparsity coefficients. This choice can guide our decision in setting the parameters of our model.
 
-![permutation](../../img/shiny/permutation.png)
+![permutation](../img/shiny/permutation.png)
 
 *Fig. 11 : A permutation allows to select a set of significant parameters, here the combination of the lowest sparsity coefficients.*
+  
