@@ -4,10 +4,10 @@ cache: packages
 
 r:
 - bioc-release
-- 3.6
-- 3.5
-- 3.4
-- 3.3
+#- 3.6
+#- 3.5
+#- 3.4
+#- 3.3
 
 after_success:
 - tar -C .. -xvf *tar.gz
