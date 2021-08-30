@@ -16,7 +16,9 @@ Depends:
     R (>= 3.3)
 Suggests:
     testthat,
-    covr
+    covr,
+    knitr,
+    rmarkdown
 RoxygenNote: 7.1.1
 Imports:
     devtools,
@@ -26,3 +28,4 @@ Imports:
     DT,
     optparse
 biocViews: Visualization, PrincipalComponent, DimensionReduction, StructuralEquationModels
+VignetteBuilder: knitr
