@@ -354,10 +354,11 @@ app_server <- function(input, output, session) {
             ui <- shinyInput_label_embed(
                 ui,
                 icon("question") %>%
-                    bs_embed_tooltip(title = "To tune the sparsity coefficient (if the model is sparse) or tau
-                                     (otherwise), we observe the deviation between the model and a set of models
-                                     where the lines of each block are permuted. The model with the best
-                                     combination of parameters is the one with the highest deviation.")
+                    bs_embed_tooltip(
+                        title = "To tune the sparsity coefficient (if the model is sparse) or tau
+                        (otherwise), we observe the deviation between the model and a set of models
+                        where the lines of each block are permuted. The model with the best
+                        combination of parameters is the one with the highest deviation.")
             )
         
         return(ui)
@@ -376,9 +377,10 @@ app_server <- function(input, output, session) {
             ui <- shinyInput_label_embed(
                 ui,
                 icon("question") %>%
-                    bs_embed_tooltip(title = "By taking several random samples from the dataset (bootstrap),
-                                     the importance of the variables may vary. The variables that are most
-                                     often selected are those that are retained.")
+                    bs_embed_tooltip(
+                        title = "By taking several random samples from the dataset (bootstrap),
+                        the importance of the variables may vary. The variables that are most
+                        often selected are those that are retained.")
             )
         
         return(ui)
@@ -410,14 +412,15 @@ app_server <- function(input, output, session) {
             ui <- shinyInput_label_embed(
                 ui,
                 icon("question") %>%
-                    bs_embed_tooltip(title = "To tune the sparsity coefficient (if the model is sparse) or
-                                     tau (otherwise), in supervised mode, we observe the performance (RMSE)
-                                     of a model from which samples were randomly drawn. These samples
-                                     can be divided into k folds where the model will be tested on each fold
-                                     and trained on the others. For small datasets (<30 samples), it is
-                                     recommended to use as many folds as there are samples (leave-one-out;
-                                     loo). The best combination of parameters is the one where, on average,
-                                     the samples perform best.")
+                    bs_embed_tooltip(
+                        title = "To tune the sparsity coefficient (if the model is sparse) or
+                        tau (otherwise), in supervised mode, we observe the performance (RMSE)
+                        of a model from which samples were randomly drawn. These samples
+                        can be divided into k folds where the model will be tested on each fold
+                        and trained on the others. For small datasets (<30 samples), it is
+                        recommended to use as many folds as there are samples (leave-one-out;
+                        loo). The best combination of parameters is the one where, on average,
+                        the samples perform best.")
             )
         
         return(ui)
@@ -432,15 +435,16 @@ app_server <- function(input, output, session) {
         else
             penalty <- ""
         
-        conditionalPanel(condition = "input.tau_opt == false",
-                         checkboxInput(
-                             inputId = "each_tau",
-                             label = paste(penalty, "for each block"),
-                             value = if (!is.null(isolate(input$each_tau)))
-                                 input$each_tau
-                             else
-                                 FALSE
-                         ))
+        conditionalPanel(
+            condition = "input.tau_opt == false",
+            checkboxInput(
+                inputId = "each_tau",
+                label = paste(penalty, "for each block"),
+                value = if (!is.null(isolate(input$each_tau)))
+                        input$each_tau
+                    else
+                        FALSE
+                    ))
     })
     
     output$tau_opt_custom <- renderUI({
@@ -832,10 +836,11 @@ app_server <- function(input, output, session) {
         )
     
     design <- function()
-        plot_network2(rgcca_out,
-                      cex_main = CEX_MAIN,
-                      cex_point = CEX_POINT,
-                      cex = CEX)
+        plot_network2(
+            rgcca_out,
+            cex_main = CEX_MAIN,
+            cex_point = CEX_POINT,
+            cex = CEX)
     
     design2 <- function()
         plot_network(
@@ -884,7 +889,7 @@ app_server <- function(input, output, session) {
         if (input$each_ncomp) {
             ncomp <- integer(0)
             cond <- input$superblock && ( toupper(analysis_type) %in% c("PCA", "RGCCA", "SGCCA") ||
-                                              analysis_type %in% multiple_blocks_super)
+                                            analysis_type %in% multiple_blocks_super)
             for (i in 1:(length(blocks_without_superb) + ifelse(cond, 1, 0)))
                 ncomp <- c(ncomp, input[[paste0("ncomp", i)]])
         } else if (is.null(input$ncomp) || min(getMaxComp()) == 1)
@@ -945,8 +950,8 @@ app_server <- function(input, output, session) {
         }
         
         if ( (!is.null(input$superblock) && input$superblock) &&
-             ( toupper(analysis_type) %in% c("PCA", "RGCCA", "SGCCA")) ||
-             analysis_type %in% multiple_blocks_super ) {
+            ( toupper(analysis_type) %in% c("PCA", "RGCCA", "SGCCA")) ||
+            analysis_type %in% multiple_blocks_super ) {
             blocks <- c(blocks, superblock = list(Reduce(cbind, blocks)))
         }
         
@@ -985,30 +990,30 @@ app_server <- function(input, output, session) {
         scheme <- input$scheme
         
         assign("rgcca_out",
-               showWarn({
-                   func <- quote(
-                       rgcca(
-                           blocks_without_superb,
-                           connection = connection,
-                           response = response,
-                           superblock = (!is.null(input$supervised) &&
-                                             !is.null(input$superblock) && input$superblock),
-                           ncomp = getNcomp(),
-                           scheme = scheme,
-                           scale = FALSE,
-                           scale_block = FALSE,
-                           init = input$init,
-                           bias = TRUE,
-                           method = analysis_type
-                       )
-                   )
-                   if (tolower(analysis_type) %in% c("sgcca", "spca", "spls"))
-                       func[["sparsity"]] <- tau
-                   else
-                       func[["tau"]] <- tau
-                   eval(as.call(func))
-               }),
-               .GlobalEnv)
+            showWarn({
+                func <- quote(
+                    rgcca(
+                        blocks_without_superb,
+                        connection = connection,
+                        response = response,
+                        superblock = (!is.null(input$supervised) &&
+                                        !is.null(input$superblock) && input$superblock),
+                        ncomp = getNcomp(),
+                        scheme = scheme,
+                        scale = FALSE,
+                        scale_block = FALSE,
+                        init = input$init,
+                        bias = TRUE,
+                        method = analysis_type
+                    )
+                )
+                if (tolower(analysis_type) %in% c("sgcca", "spca", "spls"))
+                    func[["sparsity"]] <- tau
+                else
+                    func[["tau"]] <- tau
+                eval(as.call(func))
+            }),
+            .GlobalEnv)
         
     }
     
@@ -1035,7 +1040,7 @@ app_server <- function(input, output, session) {
                         k = input$kfold,
                         n_run = input$ncv,
                         superblock = (!is.null(input$supervised) &&
-                                          !is.null(input$superblock) && input$superblock),
+                                        !is.null(input$superblock) && input$superblock),
                         scale = FALSE,
                         scale_block = FALSE,
                         scheme = input$scheme,
@@ -1102,7 +1107,7 @@ app_server <- function(input, output, session) {
                     connection = connection,
                     response = response,
                     superblock = (!is.null(input$supervised) &&
-                                      !is.null(input$superblock) && input$superblock),
+                                    !is.null(input$superblock) && input$superblock),
                     scheme = input$scheme,
                     scale = FALSE,
                     scale_block = FALSE,
@@ -1244,9 +1249,9 @@ app_server <- function(input, output, session) {
     setToggleCorFing <- function() {
         condition <- !is.null(analysis) && getNcompScalar() > 1
         toggle(condition = condition,
-               selector = paste0("#navbar li a[data-value=Corcircle"))
+                selector = paste0("#navbar li a[data-value=Corcircle"))
         toggle(condition = isolate(getMaxCol() > 1),
-               selector = paste0("#navbar li a[data-value=Fingerprint"))
+                selector = paste0("#navbar li a[data-value=Fingerprint"))
         if (!(condition || isolate(getMaxCol() > 1)))
             updateTabsetPanel(session, "navbar", selected = "Samples")
     }
@@ -1255,7 +1260,7 @@ app_server <- function(input, output, session) {
         condition <- !is.null(boot) && isolate(getMaxCol() > 1)
         for (i in c("Bootstrap", "'Bootstrap Summary'"))
             toggle(condition = condition,
-                   selector = paste0("#navbar li a[data-value=", i, "]"))
+                    selector = paste0("#navbar li a[data-value=", i, "]"))
         if (!condition)
             updateTabsetPanel(session, "navbar", selected = "Samples")
     }
@@ -1275,7 +1280,7 @@ app_server <- function(input, output, session) {
     observeEvent(
         input$navbar,
         toggle(condition = is.null(input$compx) || getNcompScalar() > 1,
-               id = "compx_custom"))
+                id = "compx_custom"))
     
     observeEvent(c(input$navbar, input$tabset), {
         toggle(
@@ -1289,7 +1294,7 @@ app_server <- function(input, output, session) {
         # toggle(condition = getNcompScalar() > 1, id = "compx_custom")
         toggle(
             condition = (input$navbar == "Samples" &&
-                             length(input$blocks$datapath) > 1),
+                            length(input$blocks$datapath) > 1),
             id = "blocks_names_custom_y")
         toggle(condition = input$navbar == "Samples", id = "response_custom")
         toggle(condition = input$navbar == "Samples" && !is.null(crossval), id = "show_crossval")
@@ -1381,22 +1386,22 @@ app_server <- function(input, output, session) {
         cleanup_analysis_par()
         
         blocks_unscaled <- showWarn(
-                   tryCatch({
-                       load_blocks(
-                           file = paths,
-                           names = names,
-                           sep = input$sep,
-                           header = TRUE
-                       )
-                   }, error = function(e) {
-                       if (class(e)[1] == "102") {
-                           cleanup_analysis_par()
-                           stop(sub("0.tsv", "The loaded file", e$message))
-                       }
-                       else
-                           stop(e$message)
-                   }), msg = TRUE, show = FALSE
-               )
+                    tryCatch({
+                        load_blocks(
+                            file = paths,
+                            names = names,
+                            sep = input$sep,
+                            header = TRUE
+                        )
+                    }, error = function(e) {
+                        if (class(e)[1] == "102") {
+                            cleanup_analysis_par()
+                            stop(sub("0.tsv", "The loaded file", e$message))
+                        }
+                        else
+                            stop(e$message)
+                    }), msg = TRUE, show = FALSE
+                )
         assign("blocks_unscaled", blocks_unscaled, .GlobalEnv)
         
         if (!is.list(blocks_unscaled)) {
@@ -1412,7 +1417,7 @@ app_server <- function(input, output, session) {
             scaling(
                 blocks_unscaled,
                 ifelse(is.null(input$scale),
-                       TRUE, input$scale),
+                        TRUE, input$scale),
                 TRUE
             ),
             .GlobalEnv
@@ -1430,8 +1435,8 @@ app_server <- function(input, output, session) {
         assign("response", load_responseShiny(), .GlobalEnv)
         
         assign("id_block_resp",
-               length(blocks_without_superb),
-               .GlobalEnv)
+                length(blocks_without_superb),
+                .GlobalEnv)
         blocks <- isolate(setParRGCCA(FALSE))
         assign("blocks", blocks, .GlobalEnv)
         assign("connection_file", NULL, .GlobalEnv)
@@ -1459,8 +1464,8 @@ app_server <- function(input, output, session) {
         hide(id = "navbar")
         if (blocksExists()) {
             assign("connection_file",
-                   input$connection$datapath,
-                   .GlobalEnv)
+                    input$connection$datapath,
+                    .GlobalEnv)
             set_connectionShiny(TRUE)
             setUiConnection()
             assign("connection_file", NULL, .GlobalEnv)
@@ -1686,8 +1691,8 @@ app_server <- function(input, output, session) {
     observeEvent(input$response, {
         if (!is.null(input$response)) {
             assign("response_file",
-                   input$response$datapath,
-                   .GlobalEnv)
+                    input$response$datapath,
+                    .GlobalEnv)
             assign("response", load_responseShiny(), .GlobalEnv)
             setUiResponse()
             showWarn(samples(), warn = TRUE)

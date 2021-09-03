@@ -349,14 +349,14 @@ opt <- list(
 load_libraries <- function(librairies) {
     for (l in librairies) {
         if (!(l %in% installed.packages()[, "Package"]))
-          utils::install.packages(l, repos = "cran.us.r-project.org")
+            utils::install.packages(l, repos = "cran.us.r-project.org")
         suppressPackageStartupMessages(
-          library(
-            l,
-            character.only = TRUE,
-            warn.conflicts = FALSE,
-            quietly = TRUE
-          ))
+            library(
+                l,
+                character.only = TRUE,
+                warn.conflicts = FALSE,
+                quietly = TRUE
+            ))
     }
 }
 
