@@ -2,6 +2,17 @@
 #' 
 #' @param input,output,session Internal parameters for {shiny}.
 #' @import shiny
+#' @import optparse
+#' @importFrom golem activate_js add_resource_path bundle_resources favicon with_golem_options
+#' @importFrom shiny shinyApp
+#' @importFrom utils head install.packages installed.packages lsf.str packageVersion write.table
+#' @importFrom graphics plot
+#' @importFrom bsplus bs_embed_tooltip shinyInput_label_embed
+#' @importFrom shinyjs hide useShinyjs show toggle onclick
+#' @importFrom methods is
+#' @importFrom plotly plotlyOutput style renderPlotly
+#' @importFrom visNetwork visNetworkOutput renderVisNetwork
+#' @importFrom magrittr `%>%`
 #' @noRd
 # Author: Etienne CAMENEN
 # Date: 2021
@@ -17,21 +28,14 @@ app_server <- function(input, output, session) {
     ################################################ Render UI ################################################
     
     # Global variables
-    `%>%` <- `<<-` <- all_funcs <- analysis <- blocks_unscaled <-
-    blocks_without_superb <- boot  <- bootstrap <- bs_embed_tooltip <-
+    `<<-` <- analysis <- boot <- blocks_without_superb <- bootstrap <-
     check_connection <- connection <- connection_file <- crossval <- cv <-
-    get_bootstrap <- head <- hide <- id_block <- id_block_y <-
-    install.packages <- installed.packages <- is <- load_blocks <-
-    load_connection <- load_response <- lsf.str <- modify_hovertext <-
-    multiple_blocks <- multiple_blocks_super <- onclick <- one_block <-
-    order_df <- packageVersion <- perm <- plot <- plot_ave <-
-    plot_bootstrap_1D <- plot_dynamic <- plot_ind <- plot_network <-
-    plot_network2 <- plot_permut_2D <- plot_var_1D <- plot_var_2D <-
-    plotlyOutput <- renderPlotly <- renderVisNetwork <- rgcca_cv_k <-
-    rgcca_out <- rgcca_stability <- save_ind <- save_plot <- save_var <-
-    scaling <- selected.var <- shinyInput_label_embed <- show <- style <-
-    toggle <- two_blocks <- useShinyjs <- visNetworkOutput <- write.table <-
-    id_block_resp <- response  <- response_file  <- sparsity  <- tau  <- NULL
+    get_bootstrap <- id_block <- id_block_y <- load_blocks <-
+    load_connection <- load_response <- order_df <- perm <- plot_ave <-
+    plot_bootstrap_1D <- plot_ind <- plot_network <- plot_network2 <-
+    plot_permut_2D <- plot_var_1D <- plot_var_2D <- rgcca_cv_k <- rgcca_out <-
+    rgcca_stability <- selected.var <- id_block_resp <- response <-
+    response_file  <- tau  <- res <- blocks_unscaled <- NULL
 
     blocks <- list(matrix(0,2,2))
     analysis_type <- "RGCCA"
@@ -213,13 +217,15 @@ app_server <- function(input, output, session) {
     setTau <- function(par_name, i = "") {
         
         label <- par_name
-        min <- sapply(
+        min <- vapply(
             blocks,
-            function(x)
+            function(x) {
                 ifelse(
                     par_name == "Tau",
                     0,
                     ceiling(1 / sqrt(NCOL(x)) * 100) / 100)
+            },
+            0
         )
         
         if (i != "") {
@@ -638,7 +644,7 @@ app_server <- function(input, output, session) {
     getMaxComp <- function(){
         if (is.function(blocks))
             return(2)
-        comp <- sapply(
+        comp <- vapply(
             blocks,
             function(x) {
                 comp <- NCOL(x)
@@ -646,7 +652,8 @@ app_server <- function(input, output, session) {
                     return(5)
                 else
                     return(comp)
-            }
+            },
+            0
         )
     }
     
@@ -656,10 +663,15 @@ app_server <- function(input, output, session) {
         if (!is.null(input$blocks)) {
             # Creates a list of nb_blocks dimension, each one containing a id
             # from 1 to nb_blocks and having the same names as the blocks
-            return(as.list(
-                sapply(names(blocks), function(i)
-                    as.integer(which(names(blocks) == i)), USE.NAMES = TRUE)
-            ))
+            return(
+                as.list(
+                    vapply(
+                        names(blocks),
+                        function(i) {
+                            as.integer(which(names(blocks) == i))
+                        },
+                        0,
+                        USE.NAMES = TRUE)))
         } else
             return(list(" " = 1))
         
@@ -937,7 +949,7 @@ app_server <- function(input, output, session) {
         
         if (!is.null(input$superblock) && (is.null(input$each_tau) || input$each_tau)) {
             tau <- integer(0)
-            for (i in 1:(length(blocks_without_superb) + ifelse(input$superblock, 1, 0)))
+            for (i in seq(length(blocks_without_superb) + ifelse(input$superblock, 1, 0)))
                 tau <- c(tau, input[[paste0("tau", i)]])
         } else if (!is.null(input$tau))
             tau <- input$tau
@@ -952,7 +964,7 @@ app_server <- function(input, output, session) {
             ncomp <- integer(0)
             cond <- input$superblock && (toupper(analysis_type) %in% c("PCA", "RGCCA", "SGCCA") ||
                                             analysis_type %in% multiple_blocks_super)
-            for (i in 1:(length(blocks_without_superb) + ifelse(cond, 1, 0)))
+            for (i in seq(length(blocks_without_superb) + ifelse(cond, 1, 0)))
                 ncomp <- c(ncomp, input[[paste0("ncomp", i)]])
         } else if (is.null(input$ncomp) || min(getMaxComp()) == 1)
             ncomp <- 1
@@ -1684,10 +1696,10 @@ app_server <- function(input, output, session) {
     
     observeEvent(input$save_all, {
         if (blocksExists()) {
-            save_plot("samples_plot.pdf", samples())
-            try(save_plot("corcircle.pdf", corcircle()), silent = TRUE)
-            try(save_plot("fingerprint.pdf", fingerprint(input$indexes)), silent = TRUE)
-            save_plot("AVE.pdf", ave())
+            RGCCA:::save_plot("samples_plot.pdf", samples())
+            try(RGCCA:::save_plot("corcircle.pdf", corcircle()), silent = TRUE)
+            try(RGCCA:::save_plot("fingerprint.pdf", fingerprint(input$indexes)), silent = TRUE)
+            RGCCA:::save_plot("AVE.pdf", ave())
             if (any(NCOL(blocks) == 1))
                 compy <- 1
             else
@@ -1696,7 +1708,7 @@ app_server <- function(input, output, session) {
             RGCCA:::save_ind(rgcca_out, file = "samples.txt")
             save(analysis, file = "rgcca_result.RData")
             if (!is.null(boot))
-                save_plot("bootstrap.pdf", plotBoot())
+                RGCCA:::save_plot("bootstrap.pdf", plotBoot())
             # if(!is.null(perm))
             #     save("perm.pdf", plot_permut_2D(perm))
             msgSave()
@@ -1734,14 +1746,14 @@ app_server <- function(input, output, session) {
     
     observeEvent(input$connection_save, {
         if (!is.null(analysis)) {
-            save_plot(paste0("connection.", input$format), design2)
+            RGCCA:::save_plot(paste0("connection.", input$format), design2)
             msgSave()
         }
     })
     
     observeEvent(input$ave_save, {
         if (!is.null(analysis)) {
-            save_plot(paste0("ave.", input$format), ave())
+            RGCCA:::save_plot(paste0("ave.", input$format), ave())
             msgSave()
         }
     })
@@ -1765,7 +1777,7 @@ app_server <- function(input, output, session) {
             
             if (!is.null(analysis)) {
                 observeEvent(input$samples_save, {
-                    save_plot("samples_plot.pdf", samples())
+                    RGCCA:::save_plot("samples_plot.pdf", samples())
                     msgSave()
                 })
                 

@@ -364,7 +364,7 @@ load_libraries(c("ggplot2", "optparse", "scales", "igraph", "MASS", "Deriv", "de
 try(load_libraries("ggrepel"), silent = TRUE)
 
 if (!("RGCCA" %in% installed.packages()[, "Package"]) ||
-    as.double(paste(unlist(packageVersion("RGCCA"))[1:2], collapse = ".")) < 3.0) {
+    as.double(paste(unlist(packageVersion("RGCCA"))[seq(2)], collapse = ".")) < 3.0) {
     devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")
 }
 

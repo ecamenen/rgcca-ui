@@ -28,6 +28,12 @@ Imports:
     DT,
     optparse,
     config (>= 0.3.1),
-    golem (>= 0.3.1)
+    golem (>= 0.3.1),
+    plotly,
+    methods,
+    visNetwork,
+    magrittr,
+    utils,
+    graphics
 biocViews: Visualization, PrincipalComponent, DimensionReduction, StructuralEquationModels
 VignetteBuilder: knitr

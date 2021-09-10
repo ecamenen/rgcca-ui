@@ -9,18 +9,11 @@
 # plots).
 #' The application User-Interface
 #' 
-#' @param request Internal parameter for `{shiny}`. 
-#' @import shiny
-#' @importFrom utils head install.packages installed.packages lsf.str packageVersion write.table
-#' @importFrom graphics plot
-#' @importFrom methods is show
+#' @param request Internal parameter for `{shiny}`.
 #' @noRd
 app_ui <- function(request) {
 
     rm(list = ls())
-    bs_embed_tooltip <- `%>%` <- shinyInput_label_embed <- useShinyjs <-
-    plotlyOutput <- visNetworkOutput <- packageVersion <-
-    installed.packages <- NULL
     options(shiny.maxRequestSize = 30 * 1024 ^ 2)
 
     BSPLUS <- R.Version()$minor >= 3
@@ -59,7 +52,7 @@ app_ui <- function(request) {
     ))
 
     if (!("RGCCA" %in% installed.packages()[, "Package"]) ||
-        as.double(paste(unlist(packageVersion("RGCCA"))[1:2], collapse = ".")) < 3.0) {
+        as.double(paste(unlist(packageVersion("RGCCA"))[seq(2)], collapse = ".")) < 3.0) {
         devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")
     }
 
