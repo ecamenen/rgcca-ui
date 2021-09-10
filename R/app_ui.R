@@ -18,58 +18,17 @@
 app_ui <- function(request) {
 
     rm(list = ls())
-
+    bs_embed_tooltip <- `%>%` <- shinyInput_label_embed <- useShinyjs <-
+    plotlyOutput <- visNetworkOutput <- packageVersion <-
+    installed.packages <- NULL
     options(shiny.maxRequestSize = 30 * 1024 ^ 2)
 
+    BSPLUS <- R.Version()$minor >= 3
     setInfo <- function(., text) {
         shinyInput_label_embed(
             icon("question") %>%
                 bs_embed_tooltip(title = text))
     }
-
-    # Global variables
-    one_block <<- c(`Principal Component Analysis` = "PCA")
-    two_blocks <<- c(
-        `Canonical Correlation Analysis` = 'CCA',
-        `Interbattery Factor Analysis` = "IFA",
-        `Partial Least Squares Regression` = 'PLS',
-        `Redundancy analysis` = 'RA'
-    )
-    multiple_blocks  <<- c(
-        `Regularized Generalized CCA (RGCCA)` = 'RGCCA',
-        `Sparse Generalized CCA (SGCCA)` = 'SGCCA',
-        `SUM of CORrelations method` = 'SUMCOR',
-        `Sum of SQuared CORrelations method` = 'SSQCOR',
-        `Sum of ABSolute value CORrelations method` = 'SABSCOR',
-        `SUM of COVariances method` = 'SUMCOV',
-        `Sum of SQuared COVariances method` = 'SSQCOV',
-        `Sum of ABSolute value COVariances method` = 'SABSCOV',
-        `MAXBET` = 'MAXBET',
-        `MAXBETB` = 'MAXBET-B'
-    )
-    multiple_blocks_super  <<- c(
-        `Generalized CCA (GCCA)` = 'GCCA',
-        `Hierarchical PCA` = 'HPCA',
-        `Multiple Factor Analysis` = 'MFA'
-    )
-    analyse_methods  <<- list(one_block, two_blocks, multiple_blocks, multiple_blocks_super)
-    reac_var  <<- reactiveVal()
-    id_block_y <<- id_block <<- id_block_resp <<- analysis <<- connection <<- perm <<- boot <<-
-    boot <<- analysis_type <<- crossval <<- selected.var <<- crossval <<- blocks_without_superb <<- NULL
-    clickSep <<- FALSE
-    if_text <<- TRUE
-    compx <<- 1
-    nb_comp <<- compy <<- 2
-    nb_mark <<- 100
-    BSPLUS <<- R.Version()$minor >= 3 -> BSPLUS
-    ax2 <<- list(linecolor = "white",
-                tickfont = list(size = 10, color = "grey"))
-    CEX_LAB <<- 15
-    CEX_MAIN <<- 15
-    CEX_POINT <<- 3
-    CEX_SUB <<- 10
-    CEX_AXIS <<- 10
-    CEX <<- 1
 
     load_libraries <- function(librairies) {
         for (l in librairies) {
@@ -103,10 +62,6 @@ app_ui <- function(request) {
         as.double(paste(unlist(packageVersion("RGCCA"))[1:2], collapse = ".")) < 3.0) {
         devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")
     }
-
-    all_funcs <<- unclass(lsf.str(envir = asNamespace("RGCCA"), all = TRUE))
-    for (i in all_funcs)
-        eval(parse(text = paste0(i, "<<-RGCCA:::", i)))
 
     if (BSPLUS) {
         if (!("bsplus" %in% installed.packages()[, "Package"]))
