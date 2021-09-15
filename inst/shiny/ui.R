@@ -60,6 +60,11 @@ if (BSPLUS) {
     library("bsplus", warn.conflicts = FALSE, quietly = TRUE)
 }
 
+customDownloadbutton <- function(outputId, label = "Download"){
+    tags$a(id = outputId, class = "btn btn-default shiny-download-link", href = "", 
+           target = "_blank", download = NA, icon("camera"), label)
+}
+
 ui <- fluidPage(
     titlePanel("R/SGCCA - The Shiny graphical interface"),
     tags$div(
@@ -78,10 +83,10 @@ ui <- fluidPage(
     tags$br(), tags$br(),
     tags$style(".fa-camera {color:#c7c7c7}"),
     tags$style(".fa-camera:hover {color:#7c7c7c}"),
-    tags$style("#connection_save, #ave_save {border-color:white; left: 0%}"),
-    tags$style("#connection_save:hover, #ave_save:hover {background-color:white}"),
-    tags$style("#connection_save:focus, #ave_save:focus {outline:none; background-color:white}"),
-    tags$style("#connection_save:active, #ave_save:active {box-shadow:none}"),
+    tags$style("#connection_save, #ave_save, #bootstrap_t_save, #permutation_t_save {border-color:white; left: 0%}"),
+    tags$style("#connection_save:hover, #ave_save:hover, #bootstrap_t_save:hover, #permutation_t_save:hover {background-color:white}"),
+    tags$style("#connection_save:focus, #ave_save:focus, #bootstrap_t_save:focus, #permutation_t_save:focus {outline:none; background-color:white}"),
+    tags$style("#connection_save:active, #ave_save:active, #bootstrap_t_save:active, #permutation_t_save:active {box-shadow:none}"),
     tags$style(".js-plotly-plot .plotly .modebar {left: 0%}"),
     useShinyjs(),
     sidebarLayout(sidebarPanel(
@@ -215,7 +220,7 @@ ui <- fluidPage(
                 ),
                 uiOutput("b_x_custom"),
                 uiOutput("b_y_custom"),
-                actionButton(inputId = "save_all", label = "Save all")
+                customDownloadbutton(outputId = "save_all", label = "Save all")
             )
         )
     ),
@@ -226,53 +231,51 @@ ui <- fluidPage(
             id = "navbar",
             tabPanel(
                 "Connection",
-                actionButton("connection_save", "", icon = icon("camera")),
+                customDownloadbutton("connection_save", ""),
                 visNetworkOutput("connectionPlot")
             ),
             tabPanel(
                 "AVE",
-                actionButton("ave_save", "", icon = icon("camera")),
+                customDownloadbutton("ave_save", ""),
                 plotOutput("AVEPlot")
             ),
             tabPanel(
                 "Samples",
                 plotlyOutput("samplesPlot", height = 500),
-                actionButton("samples_save", "Save")
+                customDownloadbutton("samples_save", "Save")
             ),
             tabPanel(
                 "Corcircle",
                 plotlyOutput("corcirclePlot", height = 500),
-                actionButton("corcircle_save", "Save")
+                customDownloadbutton("corcircle_save", "Save")
             ),
             tabPanel(
                 "Fingerprint",
                 plotlyOutput("fingerprintPlot", height = 700),
-                actionButton("fingerprint_save", "Save")
+                customDownloadbutton("fingerprint_save", "Save")
             ),
             tabPanel(
                 "Bootstrap",
                 plotlyOutput("bootstrapPlot", height = 700),
-                actionButton("bootstrap_save", "Save")
+                customDownloadbutton("bootstrap_save", "Save")
             ),
             tabPanel(
                 "Bootstrap Summary",
-                DT::dataTableOutput("bootstrapTable"),
-                actionButton("bootstrap_t_save", "Save")
+                customDownloadbutton("bootstrap_t_save", ""),
+                DT::dataTableOutput("bootstrapTable")
             ),
             tabPanel(
                 "Permutation",
                 plotlyOutput("permutationPlot", height = 700)
-                # actionButton("permutation_save", "Save")
             ),
             tabPanel(
                 "Permutation Summary",
-                dataTableOutput("permutationTable"),
-                actionButton("permutation_t_save", "Save")
+                customDownloadbutton("permutation_t_save", ""),
+                dataTableOutput("permutationTable")
             ),
             tabPanel(
                 "Cross-validation",
                 plotlyOutput("cvPlot", height = 700)
-                #actionButton("cv_save", "Save")
             )
         )
     ))

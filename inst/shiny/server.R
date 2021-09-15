@@ -1694,26 +1694,28 @@ server <- function(input, output, session) {
         
     })
     
-    observeEvent(input$save_all, {
-        if (blocksExists()) {
-            RGCCA:::save_plot("samples_plot.pdf", samples())
-            try(RGCCA:::save_plot("corcircle.pdf", corcircle()), silent = TRUE)
-            try(RGCCA:::save_plot("fingerprint.pdf", fingerprint(input$indexes)), silent = TRUE)
-            RGCCA:::save_plot("AVE.pdf", ave())
-            if (any(NCOL(blocks) == 1))
-                compy <- 1
-            else
-                compy <- 2
-            RGCCA:::save_var(rgcca_out, file = "variables.txt")
-            RGCCA:::save_ind(rgcca_out, file = "samples.txt")
-            save(analysis, file = "rgcca_result.RData")
-            if (!is.null(boot))
-                RGCCA:::save_plot("bootstrap.pdf", plotBoot())
-            # if(!is.null(perm))
-            #     save("perm.pdf", plot_permut_2D(perm))
-            msgSave()
-        }
-    })
+    output$save_all <- downloadHandler(
+        "",
+        content = function(file) {
+            if (blocksExists()) {
+                RGCCA:::save_plot("samples_plot.pdf", samples())
+                try(RGCCA:::save_plot("corcircle.pdf", corcircle()), silent = TRUE)
+                try(RGCCA:::save_plot("fingerprint.pdf", fingerprint(input$indexes)), silent = TRUE)
+                RGCCA:::save_plot("AVE.pdf", ave())
+                if (any(NCOL(blocks) == 1))
+                    compy <- 1
+                else
+                    compy <- 2
+                RGCCA:::save_var(rgcca_out, file = "variables.txt")
+                RGCCA:::save_ind(rgcca_out, file = "samples.txt")
+                save(analysis, file = "rgcca_result.RData")
+                if (!is.null(boot))
+                    RGCCA:::save_plot("bootstrap.pdf", plotBoot())
+                # if(!is.null(perm))
+                #     save("perm.pdf", plot_permut_2D(perm))
+                msgSave()
+        }}
+    )
     
     msgSave <- function()
         showWarn(message(paste("Save in", getwd())), show = FALSE)
@@ -1744,19 +1746,23 @@ server <- function(input, output, session) {
     
     ################################################ Outputs ################################################
     
-    observeEvent(input$connection_save, {
-        if (!is.null(analysis)) {
-            RGCCA:::save_plot(paste0("connection.", input$format), design2)
-            msgSave()
-        }
-    })
+    output$connection_save <- downloadHandler(
+        paste0("connection.", input$format),
+        content = function(file) {
+            if (!is.null(analysis)) {
+                RGCCA:::save_plot(file, design2)
+                msgSave()
+        }}
+    )
     
-    observeEvent(input$ave_save, {
-        if (!is.null(analysis)) {
-            RGCCA:::save_plot(paste0("ave.", input$format), ave())
-            msgSave()
-        }
-    })
+    output$ave_save <- downloadHandler(
+        paste0("ave.", input$format), 
+        content = function(file) {
+            if (!is.null(analysis)) {
+                RGCCA:::save_plot(file, ave())
+                msgSave()
+        }}
+    )
     
     output$connectionPlot <- renderVisNetwork({
         refresh <- c(getDynamicVariables(), input$val)
@@ -1776,11 +1782,7 @@ server <- function(input, output, session) {
             getDynamicVariables()
             
             if (!is.null(analysis)) {
-                observeEvent(input$samples_save, {
-                    RGCCA:::save_plot("samples_plot.pdf", samples())
-                    msgSave()
-                })
-                
+
                 RGCCA:::save_ind(rgcca_out, file = "samples.txt")
                 p <- samples()
                 
@@ -1803,11 +1805,7 @@ server <- function(input, output, session) {
             getDynamicVariables()
             
             if (!is.null(analysis)) {
-                observeEvent(input$corcircle_save, {
-                    RGCCA:::save_plot("corcircle.pdf", corcircle())
-                    msgSave()
-                })
-                
+
                 RGCCA:::save_var(rgcca_out, file = "variables.txt")
                 p <- corcircle()
                 
@@ -1830,10 +1828,6 @@ server <- function(input, output, session) {
             getDynamicVariables()
             
             if (!is.null(analysis)) {
-                observeEvent(input$fingerprint_save, {
-                    RGCCA:::save_plot("fingerprint.pdf", fingerprint(input$indexes))
-                    msgSave()
-                })
                 RGCCA:::modify_hovertext(RGCCA:::plot_dynamic(fingerprint(input$indexes), type = "var1D", format = input$format), hovertext = FALSE, type = "var1D")
             }
         }, error = function(e) {
@@ -1848,11 +1842,6 @@ server <- function(input, output, session) {
             if (!is.null(analysis) & !is.null(boot)) {
                 
                 selected.var <<- get_bootstrap(boot, , compx, id_block)
-                
-                # observeEvent(input$bootstrap_save, {
-                #     save_plot("bootstrap.pdf", plotBoot())
-                #     msgSave()
-                # })
                 
                 RGCCA:::modify_hovertext(RGCCA:::plot_dynamic(plotBoot(), type = "boot1D", format = input$format), type = "boot1D", hovertext = FALSE)
             }
@@ -1873,10 +1862,13 @@ server <- function(input, output, session) {
                 df <- round(get_bootstrap(boot, , compx, id_block, display_order = FALSE), 3)[, -c(1, 3, 6)]
                 colnames(df) <- c("RGCCA weight", "Lower limit", "Upper limit", "P-value", "B.H.")
                 
-                observeEvent(input$bootstrap_t_save, {
-                    write.table(df, "summary_bootstrap.txt", sep = "\t")
-                    msgSave()
-                })
+                output$bootstrap_t_save <- downloadHandler(
+                    "summary_bootstrap.txt",
+                    content = function(file) {
+                        write.table(df, file, sep = "\t")
+                        msgSave()
+                    }
+                )
                 
                 df
             }
@@ -1891,13 +1883,9 @@ server <- function(input, output, session) {
         getDynamicVariables()
         
         if (!is.null(perm)) {
-            #     observeEvent(input$permutation_save, {
-            #         save("perm.pdf", plot_permut_2D(perm))
-            #         msgSave()
-            #     })
             RGCCA:::modify_hovertext(
                 RGCCA:::plot_dynamic(
-                    plot_permut_2D(
+                    RGCCA:::plot_permut_2D(
                         perm,
                         cex_lab = CEX_LAB,
                         cex_main = CEX_MAIN,
@@ -1925,10 +1913,13 @@ server <- function(input, output, session) {
             colnames(tab_res) <- c("RGCCA crit", "Perm. crit", "S.D.", "Z", "P-value")
             s_perm <- round(cbind(perm$penalties, tab_res), 3)
             
-            observeEvent(input$permutation_t_save, {
-                write.table(s_perm, "summary_permutation.txt", sep = "\t", row.names = FALSE)
-                msgSave()
-            })
+            output$permutation_t_save <- downloadHandler(
+                "summary_permutation.txt",
+                content = function(file) {
+                    write.table(s_perm, file, sep = "\t", row.names = FALSE)
+                    msgSave()
+                }
+            )
             
             s_perm
         }
@@ -1940,10 +1931,6 @@ server <- function(input, output, session) {
         getDynamicVariables()
         
         if (!is.null(cv)) {
-            # observeEvent(input$cv_save, {
-            #     save("cv.pdf", plot(cv))
-            #     msgSave()
-            # })
             RGCCA:::modify_hovertext(
                 RGCCA:::plot_dynamic(
                     plot(
