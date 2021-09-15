@@ -35,7 +35,7 @@ app_server <- function(input, output, session) {
     plot_bootstrap_1D <- plot_ind <- plot_network <- plot_network2 <-
     plot_permut_2D <- plot_var_1D <- plot_var_2D <- rgcca_cv_k <- rgcca_out <-
     rgcca_stability <- selected.var <- id_block_resp <- response <-
-    response_file  <- tau  <- res <- blocks_unscaled <- NULL
+    response_file  <- tau  <- res <- blocks_unscaled <- response_color <- NULL
 
     blocks <- list(matrix(0,2,2))
     analysis_type <- "RGCCA"
@@ -832,7 +832,7 @@ app_server <- function(input, output, session) {
         
         if (!is.null(crossval)) {
             response_name <- "Response"
-            response <- rep(1, NROW(rgcca_out$Y[[1]]))
+            response_color <- rep(1, NROW(rgcca_out$Y[[1]]))
         } else if (!is.null(input$response))
             response_name <- getExtension(input$response$name)
         else
@@ -849,7 +849,7 @@ app_server <- function(input, output, session) {
         if (!is.null(input$compx))
             plot_ind(
                 rgcca = rgcca_out,
-                resp = response,
+                resp = response_color,
                 compx = input$compx,
                 compy = compy,
                 i_block = id_block,
@@ -1020,7 +1020,7 @@ app_server <- function(input, output, session) {
         if ( (!is.null(input$superblock) && input$superblock) &&
             (toupper(analysis_type) %in% c("PCA", "RGCCA", "SGCCA")) ||
             analysis_type %in% multiple_blocks_super) {
-            blocks <<- c(blocks, superblock = list(Reduce(cbind, blocks)))
+            blocks <<- c(blocks, superblock = list(Reduce(cbind, blocks))) -> blocks
         }
 
         analysis_type <<- analysis_type
@@ -1553,8 +1553,8 @@ app_server <- function(input, output, session) {
     save_connection <- function(connection){
         if_superblock <- grep("superblock", rownames(connection))
         if (length(if_superblock) > 0)
-            connection <<- connection[-if_superblock, -if_superblock]
-        write.table(connection, file = "connection.txt", sep = "\t")
+            connection_temp <- connection[-if_superblock, -if_superblock]
+        write.table(connection_temp, file = "connection.txt", sep = "\t")
     }
     
     observeEvent(
@@ -1731,7 +1731,7 @@ app_server <- function(input, output, session) {
     observeEvent(input$response, {
         if (!is.null(input$response)) {
             response_file <<- input$response$datapath
-            response <<- load_responseShiny()
+            response_color <<- load_responseShiny()
             setUiResponse()
             showWarn(samples(), warn = TRUE)
             showWarn(message(
