@@ -7,72 +7,33 @@
 # Abstract: Performs multi-variate analysis (PCA, CCA, PLS, R/SGCCA, etc.)
 # and produces textual and graphical outputs (e.g. variables and samples
 # plots).
+#' The application User-Interface
+#' 
+#' @param request Internal parameter for `{shiny}`.
+#' @noRd
 
 rm(list = ls())
 options(shiny.maxRequestSize = 30 * 1024 ^ 2)
 
+BSPLUS <- R.Version()$minor >= 3
 setInfo <- function(., text) {
     shinyInput_label_embed(
         icon("question") %>%
             bs_embed_tooltip(title = text))
 }
 
-# Global variables
-one_block <<- c(`Principal Component Analysis` = "PCA")
-two_blocks <<- c(
-        `Canonical Correlation Analysis` = 'CCA',
-        `Interbattery Factor Analysis` = "IFA",
-        `Partial Least Squares Regression` = 'PLS',
-        `Redundancy analysis` = 'RA'
-    )
-multiple_blocks  <<- c(
-        `Regularized Generalized CCA (RGCCA)` = 'RGCCA',
-        `Sparse Generalized CCA (SGCCA)` = 'SGCCA',
-        `SUM of CORrelations method` = 'SUMCOR',
-        `Sum of SQuared CORrelations method` = 'SSQCOR',
-        `Sum of ABSolute value CORrelations method` = 'SABSCOR',
-        `SUM of COVariances method` = 'SUMCOV',
-        `Sum of SQuared COVariances method` = 'SSQCOV',
-        `Sum of ABSolute value COVariances method` = 'SABSCOV',
-        `MAXBET` = 'MAXBET',
-        `MAXBETB` = 'MAXBET-B'
-    )
-multiple_blocks_super  <<- c(
-        `Generalized CCA (GCCA)` = 'GCCA',
-        `Hierarchical PCA` = 'HPCA',
-        `Multiple Factor Analysis` = 'MFA'
-    )
-analyse_methods  <<- list(one_block, two_blocks, multiple_blocks, multiple_blocks_super)
-reac_var  <<- reactiveVal()
-id_block_y <<- id_block <<- id_block_resp <<- analysis <<- connection <<- perm <<- boot <<-
-boot <<- analysis_type <<- crossval <<- selected.var <<- crossval <<- blocks_without_superb <<- NULL
-clickSep <<- FALSE
-if_text <<- TRUE
-compx <<- 1
-nb_comp <<- compy <<- 2
-nb_mark <<- 100
-BSPLUS <<- R.Version()$minor >= 3
-ax2 <<- list(linecolor = "white",
-        tickfont = list(size = 10, color = "grey"))
-CEX_LAB <<- 15
-CEX_MAIN <<- 15
-CEX_POINT <<- 3
-CEX_SUB <<- 10
-CEX_AXIS <<- 10
-CEX <<- 1
-
 load_libraries <- function(librairies) {
-  for (l in librairies) {
-    if (!(l %in% installed.packages()[, "Package"]))
-      utils::install.packages(l, repos = "cran.us.r-project.org")
+    for (l in librairies) {
+        if (!(l %in% installed.packages()[, "Package"]))
+            utils::install.packages(l, repos = "cran.us.r-project.org")
     suppressPackageStartupMessages(
-      library(
-        l,
-        character.only = TRUE,
-        warn.conflicts = FALSE,
-        quietly = TRUE
-      ))
-  }
+        library(
+            l,
+            character.only = TRUE,
+            warn.conflicts = FALSE,
+            quietly = TRUE
+        ))
+    }
 }
 
 load_libraries(c(
@@ -89,18 +50,14 @@ load_libraries(c(
 ))
 
 if (!("RGCCA" %in% installed.packages()[, "Package"]) ||
-    as.double(paste(unlist(packageVersion("RGCCA"))[1:2], collapse = ".")) < 3.0) {
+    as.double(paste(unlist(packageVersion("RGCCA"))[seq(2)], collapse = ".")) < 3.0) {
     devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")
 }
-
-all_funcs <<- unclass(lsf.str(envir = asNamespace("RGCCA"), all = TRUE))
-for (i in all_funcs)
-    eval(parse(text = paste0(i, "<<-RGCCA:::", i)))
 
 if (BSPLUS) {
     if (!("bsplus" %in% installed.packages()[, "Package"]))
         devtools::install_github("ijlyttle/bsplus", upgrade = "never")
-    library("bsplus", warn.conflicts = FALSE, quiet = TRUE)
+    library("bsplus", warn.conflicts = FALSE, quietly = TRUE)
 }
 
 ui <- fluidPage(
@@ -109,7 +66,7 @@ ui <- fluidPage(
         tags$p(
             "Etienne CAMENEN, Ivan MOSZER, Arthur TENENHAUS (",
             tags$a(href = "arthur.tenenhaus@l2s.centralesupelec.fr",
-            "arthur.tenenhaus@l2s.centralesupelec.fr"),
+                "arthur.tenenhaus@l2s.centralesupelec.fr"),
             ")"
         ),
         tags$i("Multi-block data analysis concerns the analysis of several sets of variables (blocks) observed on the same group of samples. The main aims of the RGCCA package are: to study the relationships between blocks and to identify subsets of variables of each block which are active in their relationships with the other blocks."),
@@ -141,22 +98,19 @@ ui <- fluidPage(
                 )
             ),
 
-
             # Analysis parameters
 
             tabPanel(
                 "RGCCA",
                 uiOutput("analysis_type_custom"),
-
                 uiOutput("scale_custom"),
                 radioButtons(
                     "init",
                     label = "Mode of initialization",
                     choices = c(SVD = "svd",
-                                Random = "random"),
+                        Random = "random"),
                     selected = "svd"
                 ),
-
                 uiOutput("superblock_custom"),
                 checkboxInput(
                     inputId = "supervised",
@@ -165,16 +119,14 @@ ui <- fluidPage(
                 ),
                 conditionalPanel(
                     condition = "input.supervised || input.analysis_type == 'RA'",
-                    uiOutput("blocks_names_response")),
+                uiOutput("blocks_names_response")),
                 uiOutput("connection_custom"),
-
                 checkboxInput(
                     inputId = "each_ncomp",
                     label = "Number of components for each block",
                     value = FALSE
                 ),
                 uiOutput("nb_compcustom"),
-
                 uiOutput("tau_opt_custom"),
                 uiOutput("each_tau_custom"),
                 uiOutput("tau_custom"),
@@ -201,7 +153,7 @@ ui <- fluidPage(
                     label = "Run cross-validation"),
                 uiOutput("nperm_custom"),
                 actionButton(inputId = "run_perm",
-                    label = "Run permutation"),
+                        label = "Run permutation"),
                 # sliderInput(
                 #     inputId = "power",
                 #     label = "Power of the factorial",
@@ -216,7 +168,7 @@ ui <- fluidPage(
                     label = "Run analysis"),
                 uiOutput("nboot_custom"),
                 actionButton(inputId = "run_boot",
-                    label = "Run bootstrap"),
+                        label = "Run bootstrap"),
                 actionButton(
                     inputId = "run_crossval_single",
                     label = "Evaluate the model")
@@ -265,7 +217,6 @@ ui <- fluidPage(
                 uiOutput("b_y_custom"),
                 actionButton(inputId = "save_all", label = "Save all")
             )
-
         )
     ),
 
@@ -324,6 +275,5 @@ ui <- fluidPage(
                 #actionButton("cv_save", "Save")
             )
         )
-
     ))
 )

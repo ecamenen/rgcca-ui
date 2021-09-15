@@ -26,6 +26,12 @@ Imports:
     shiny,
     shinyjs,
     DT,
-    optparse
+    optparse,
+    plotly,
+    methods,
+    visNetwork,
+    magrittr,
+    utils,
+    graphics
 biocViews: Visualization, PrincipalComponent, DimensionReduction, StructuralEquationModels
 VignetteBuilder: knitr
