@@ -1390,11 +1390,11 @@ server <- function(input, output, session) {
     
     observeEvent(c(input$tau_opt, input$supervised, input$tune_type, input$analysis_type, input$val), {
         cleanup_analysis_par()
-        perm <<- NULL
-        cv <<- NULL
+        perm <<- NULL -> perm
+        cv <<- NULL -> cv
         toggle(
             id = "run_analysis",
-            condition = !is.null(input$analysis_type) ||
+            condition = is.null(input$analysis_type) ||
                 !tolower(input$analysis_type) %in% c("rgcca", "sgcca") ||
                 !is.null(input$tau_opt) &&
                 (
