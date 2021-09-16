@@ -1339,8 +1339,7 @@ server <- function(input, output, session) {
             condition = (input$navbar %in% c("Corcircle", "Fingerprint", "Bootstrap") && isolate(getMaxCol() > 10)),
             id = "nb_mark_custom")
         condition = (!input$navbar %in% c("Fingerprint", "Bootstrap", "Bootstrap Summary"))
-        toggle(
-            condition = condition, id = "text")
+        toggle(condition = condition, id = "text")
         toggle(
             condition = condition && getNcompScalar() > 1, id = "compy_custom")
         # toggle(condition = getNcompScalar() > 1, id = "compx_custom")
@@ -1357,7 +1356,7 @@ server <- function(input, output, session) {
         #     toggle(condition = (input$navbar == "Bootstrap"), id = i)
         toggle(
             condition = (
-                !is.null(analysis) && !input$navbar %in% c("Connection", "AVE", "Cross-validation", "'Bootstrap Summary'", "Permutation", "'Permutation Summary'")
+                !is.null(analysis) && !input$navbar %in% c("Connection", "AVE", "Cross-validation", "Permutation", "Permutation Summary")
             ),
             selector = "#tabset li a[data-value=Graphic]"
         )
@@ -1365,7 +1364,7 @@ server <- function(input, output, session) {
     
     
     observeEvent(input$navbar, {
-        if (!is.null(analysis) && input$navbar %in% c("Connection", "AVE", "Permutation", "Cross-validation"))
+        if (!is.null(analysis) && input$navbar %in% c("Connection", "AVE", "Permutation", "Permutation Summary", "Cross-validation"))
             updateTabsetPanel(session, "tabset", selected = "RGCCA")
         else if (!is.null(analysis))
             updateTabsetPanel(session, "tabset", selected = "Graphic")
@@ -1552,8 +1551,9 @@ server <- function(input, output, session) {
     
     save_connection <- function(connection){
         if_superblock <- grep("superblock", rownames(connection))
+        connection_temp <- connection
         if (length(if_superblock) > 0)
-            connection_temp <- connection[-if_superblock, -if_superblock]
+            connection_temp <- connection_temp[-if_superblock, -if_superblock]
         write.table(connection_temp, file = "connection.txt", sep = "\t")
     }
     

@@ -54,6 +54,10 @@ if (!("RGCCA" %in% installed.packages()[, "Package"]) ||
     devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")
 }
 
+all_funcs <<- unclass(lsf.str(envir = asNamespace("RGCCA"), all = TRUE))
+for (i in all_funcs)
+    eval(parse(text = paste0(i, "<<-RGCCA:::", i)))
+
 if (BSPLUS) {
     if (!("bsplus" %in% installed.packages()[, "Package"]))
         devtools::install_github("ijlyttle/bsplus", upgrade = "never")
