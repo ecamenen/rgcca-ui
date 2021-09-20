@@ -92,6 +92,13 @@ ui <- fluidPage(
     tags$style("#connection_save:focus, #ave_save:focus, #bootstrap_t_save:focus, #permutation_t_save:focus {outline:none; background-color:white}"),
     tags$style("#connection_save:active, #ave_save:active, #bootstrap_t_save:active, #permutation_t_save:active {box-shadow:none}"),
     tags$style(".js-plotly-plot .plotly .modebar {left: 0%}"),
+    tags$style(
+        HTML(".shiny-notification {
+            position:fixed;
+            top: calc(90%);
+            left: calc(50%);
+            }")
+        ),
     useShinyjs(),
     sidebarLayout(sidebarPanel(
         tabsetPanel(

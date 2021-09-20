@@ -1453,6 +1453,8 @@ server <- function(input, output, session) {
                     }), msg = TRUE, show = FALSE
                 )
         
+        showWarn(message("RGCCA tab available."))
+        
         if (!is.list(blocks_unscaled)) {
             hide(selector = "#tabset li a[data-value=RGCCA]")
             return(NULL)
