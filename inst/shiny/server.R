@@ -38,6 +38,7 @@ server <- function(input, output, session) {
     response_file  <- tau  <- res <- blocks_unscaled <- response_color <- NULL
 
     blocks <- list(matrix(0,2,2))
+    nperm_temp_prev <- nperm_temp <- 0
     analysis_type <- "RGCCA"
     one_block <- c(`Principal Component Analysis` = "PCA")
     two_blocks <- c(
@@ -65,7 +66,7 @@ server <- function(input, output, session) {
     )
     analyse_methods  <- list(one_block, two_blocks, multiple_blocks, multiple_blocks_super)
     reac_var  <- reactiveVal()
-    clickSep <- FALSE
+    clickSep <- if_boot_100 <- FALSE 
     if_text <- TRUE
     compx <- 1
     nb_comp <- compy <- 2
@@ -1129,6 +1130,19 @@ server <- function(input, output, session) {
         updateTabsetPanel(session, "navbar", selected = "Samples")
     }
     
+    observeEvent(input$nperm, {
+        if (input$nperm > nperm_temp_prev) {
+            print(if_boot_100)
+            if (input$nperm >= 100 && !if_boot_100) {
+                if_boot_100 <<- TRUE
+                showWarn(warning("A number of permutation greater than 100 can slow down the app."))
+            }
+        } else
+            if_boot_100 <<- FALSE
+        nperm_temp_prev <<- nperm_temp
+        nperm_temp <<- input$nperm
+    })
+
     getPerm <-  function(){
         isolate({
             if (length(grep("[SR]GCCA", analysis_type)) == 1)
