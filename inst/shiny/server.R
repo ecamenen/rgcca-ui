@@ -330,13 +330,13 @@ server <- function(input, output, session) {
         }
     }
     
-    uiComp <- function(x, y, id_block, bool = TRUE) {
+    uiComp <- function(x, y, id_block = id_block, bool = TRUE) {
         label <- "Component"
         
         if (bool)
             label <- paste0("Component for the ", x, "-axis")
         
-        comp <- getNcompScalar()
+        comp <- getNcompScalar(id_block)
         
         sliderInput(
             inputId = paste0("comp", x),
@@ -974,10 +974,10 @@ server <- function(input, output, session) {
         return(ncomp)
     }
     
-    getNcompScalar <- function() {
+    getNcompScalar <- function(x = id_block) {
         comp <- isolate(getNcomp())
         if (length(comp) > 1)
-            comp <- comp[id_block]
+            comp <- comp[x]
         return(comp)
     }
     
@@ -1330,16 +1330,16 @@ server <- function(input, output, session) {
             updateTabsetPanel(session, "navbar", selected = "Samples")
     }
     
-    observeEvent(c(input$names_block_x), {
+    observeEvent(c(input$names_block_x, input$names_block_y), {
         setToggleCorFing()
         setToogleBoot()
         toggle(
             condition = (input$navbar %in% c("Corcircle", "Fingerprint", "Bootstrap") && isolate(getMaxCol() > 10)),
             id = "nb_mark_custom")
-        for (i in c("x", "y"))
-            toggle(
-                condition = getNcompScalar() > 1,
-                id = paste0("comp", i ,"_custom"))
+        toggle(condition = getNcompScalar() > 1,
+                id = "compx_custom")
+        toggle(condition = getNcompScalar(id_block_y) > 1,
+                id = "compy_custom")
     })
     
     observeEvent(
@@ -1354,12 +1354,13 @@ server <- function(input, output, session) {
         condition = (!input$navbar %in% c("Fingerprint", "Bootstrap", "Bootstrap Summary"))
         toggle(condition = condition, id = "text")
         toggle(
-            condition = condition && getNcompScalar() > 1, id = "compy_custom")
+            condition = condition && getNcompScalar(id_block_y) > 1,
+            id = "compy_custom")
         # toggle(condition = getNcompScalar() > 1, id = "compx_custom")
         toggle(
-            condition = (input$navbar == "Samples" &&
-                            length(input$blocks$datapath) > 1),
-            id = "blocks_names_custom_y")
+            condition = (
+                input$navbar == "Samples" && length(input$blocks$datapath) > 1),
+                id = "blocks_names_custom_y")
         toggle(condition = input$navbar == "Samples", id = "response_custom")
         toggle(condition = input$navbar == "Samples" && !is.null(crossval), id = "show_crossval")
         toggle(
