@@ -721,7 +721,7 @@ server <- function(input, output, session) {
             ids <<- c(ids, id)
             
         }, warning = function(w) {
-            warning(w$message)
+            # warning(w$message)
             if (show && warn) {
                 id <- showNotification(
                     w$message,
@@ -1132,7 +1132,6 @@ server <- function(input, output, session) {
     
     observeEvent(input$nperm, {
         if (input$nperm > nperm_temp_prev) {
-            print(if_boot_100)
             if (input$nperm >= 100 && !if_boot_100) {
                 if_boot_100 <<- TRUE
                 showWarn(warning("A number of permutation greater than 100 can slow down the app."))
@@ -1451,12 +1450,14 @@ server <- function(input, output, session) {
         cleanup_analysis_par()
         blocks_unscaled <- showWarn(
                     tryCatch({
-                        load_blocks(
+                        blocks <- load_blocks(
                             file = paths,
                             names = names,
                             sep = input$sep,
                             header = TRUE
                         )
+                        showWarn(message("RGCCA tab available."), show = FALSE)
+                        blocks
                     }, error = function(e) {
                         if (class(e)[1] == "102") {
                             cleanup_analysis_par()
@@ -1466,8 +1467,6 @@ server <- function(input, output, session) {
                             stop(e$message)
                     }), msg = TRUE, show = FALSE
                 )
-        
-        showWarn(message("RGCCA tab available."))
         
         if (!is.list(blocks_unscaled)) {
             hide(selector = "#tabset li a[data-value=RGCCA]")
@@ -1794,13 +1793,16 @@ server <- function(input, output, session) {
     })
     
     output$samplesPlot <- renderPlotly({
-        tryCatch({
+        #tryCatch({
             getDynamicVariables()
             
             if (!is.null(analysis)) {
 
                 RGCCA:::save_ind(rgcca_out, file = "samples.txt")
+                
+                options(warn = -1)
                 p <- samples()
+                options(warn = 0)
                 
                 if (is(p, "gg")) {
                     p <- showWarn(
@@ -1813,7 +1815,7 @@ server <- function(input, output, session) {
                 p
                 
             }
-        })
+        #})
     })
     
     output$corcirclePlot <- renderPlotly({
