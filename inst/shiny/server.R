@@ -1767,7 +1767,7 @@ server <- function(input, output, session) {
         content = function(file) {
             if (!is.null(analysis)) {
                 RGCCA:::save_plot(file, design2)
-                msgSave()
+                # msgSave()
         }}
     )
     
@@ -1776,7 +1776,7 @@ server <- function(input, output, session) {
         content = function(file) {
             if (!is.null(analysis)) {
                 RGCCA:::save_plot(file, ave())
-                msgSave()
+                # msgSave()
         }}
     )
     
