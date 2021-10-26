@@ -81,7 +81,7 @@ ui <- fluidPage(
         tags$i("Multi-block data analysis concerns the analysis of several sets of variables (blocks) observed on the same group of samples. The main aims of the RGCCA package are: to study the relationships between blocks and to identify subsets of variables of each block which are active in their relationships with the other blocks."),
         tags$br(), tags$br()
     ),
-    tags$a(href = "https://github.com/rgcca-factory/RGCCA/blob/release/3.0.0/inst/shiny/tutorialShiny.md", "Go to the tutorial"),
+    tags$a(href = "https://github.com/BrainAndSpineInstitute/rgcca_ui#readme", "Go to the tutorial"),
     tags$strong("|"),
     tags$a(href = "https://www.youtube.com/watch?v=QCkEBsoP-tc", "Watch a demo", target = "_blank"),
     tags$br(), tags$br(),
@@ -111,7 +111,10 @@ ui <- fluidPage(
                     inputId = "header",
                     label = "Consider first row as header",
                     value = TRUE
-                )
+                ),
+                actionButton(
+                    inputId = "run_data",
+                    label = "Use a defaut dataset")
             ),
 
             # Analysis parameters

@@ -30,7 +30,7 @@ server <- function(input, output, session) {
     # Global variables
     `<<-` <- analysis <- boot <- blocks_without_superb <- bootstrap <-
     check_connection <- connection <- connection_file <- crossval <- cv <-
-    get_bootstrap <- id_block <- id_block_y <- load_blocks <-
+    get_bootstrap <- id_block <- id_block_y <- load_blocks <- default_data <-
     load_connection <- load_response <- order_df <- perm <- plot_ave <-
     plot_bootstrap_1D <- plot_ind <- plot_network <- plot_network2 <-
     plot_permut_2D <- plot_var_1D <- plot_var_2D <- rgcca_cv_k <- rgcca_out <-
@@ -66,7 +66,7 @@ server <- function(input, output, session) {
     )
     analyse_methods  <- list(one_block, two_blocks, multiple_blocks, multiple_blocks_super)
     reac_var  <- reactiveVal()
-    clickSep <- if_boot_100 <- FALSE 
+    clickSep <- if_boot_100 <- default_run <- FALSE 
     if_text <- TRUE
     compx <- 1
     nb_comp <- compy <- 2
@@ -136,6 +136,7 @@ server <- function(input, output, session) {
             getNcomp(),
             input$blocks,
             input$sep,
+            input$run_data,
             input$scheme,
             input$scale,
             input$superblock,
@@ -168,7 +169,7 @@ server <- function(input, output, session) {
     })
     
     output$analysis_type_custom <- renderUI({
-        refresh <- c(input$blocks, input$sep)
+        refresh <- c(input$blocks, input$sep, input$run_data)
         selectInput(
             inputId = "analysis_type",
             "Analysis method",
@@ -317,7 +318,7 @@ server <- function(input, output, session) {
     
     # Define the names of the blocks and set by default on the last block
     setBlockNames <- function() {
-        if (!is.null(input$blocks)) {
+        if (!is.null(input$blocks) || !is.null(default_data)) {
             if (!is.null(id_block))
                 return(id_block)
             else
@@ -661,7 +662,7 @@ server <- function(input, output, session) {
     getNames <- function() {
         # Get the names of the blocks
         
-        if (!is.null(input$blocks)) {
+        if (!is.null(input$blocks) || !is.null(default_data)) {
             # Creates a list of nb_blocks dimension, each one containing a id
             # from 1 to nb_blocks and having the same names as the blocks
             return(
@@ -753,7 +754,7 @@ server <- function(input, output, session) {
     blocksExists <- function() {
         # Test if the blocks are loaded and contain any errors
         
-        if (!is.null(input$blocks))
+        if (!is.null(input$blocks) || !is.null(default_data))
             if (!is.null(getInfile()))
                 return(TRUE)
         return(FALSE)
@@ -777,6 +778,7 @@ server <- function(input, output, session) {
         
         refresh <- c(
             input$sep,
+            input$run_data,
             input$header,
             input$blocks,
             input$superblock,
@@ -1296,12 +1298,13 @@ server <- function(input, output, session) {
         for (i in c("tau_custom", "tau_opt_custom", "each_tau_custom", "scheme", "superblock", "connection", "supervised" ))
             setToggle(i)
         setToggle2("blocks_names_response")
+        condition <- (length(input$blocks$datapath) > 1 || (is.null(input$blocks) && !is.null(default_data)))
         hide(selector = "#tabset li a[data-value=Graphic]")
         toggle(
-            condition = (length(input$blocks$datapath) > 1),
+            condition = condition,
             id = "blocks_names_custom_x")
         toggle(
-            condition = (length(input$blocks$datapath) > 1),
+            condition = condition,
             id = "blocks_names_custom_y")
     })
     
@@ -1359,7 +1362,7 @@ server <- function(input, output, session) {
         # toggle(condition = getNcompScalar() > 1, id = "compx_custom")
         toggle(
             condition = (
-                input$navbar == "Samples" && length(input$blocks$datapath) > 1),
+                input$navbar == "Samples" && (length(input$blocks$datapath) > 1 || (is.null(input$blocks) && !is.null(default_data)))),
                 id = "blocks_names_custom_y")
         toggle(condition = input$navbar == "Samples", id = "response_custom")
         toggle(condition = input$navbar == "Samples" && !is.null(crossval), id = "show_crossval")
@@ -1426,7 +1429,7 @@ server <- function(input, output, session) {
     onclick("sep", function(e) clickSep <<- TRUE)
     
     
-    observeEvent(c(input$blocks, input$sep), {
+    observeEvent(c(input$blocks, input$sep, input$run_data), {
         # blockExists for having dynamic response to input$blocks
         
         hide(id = "navbar")
@@ -1435,19 +1438,32 @@ server <- function(input, output, session) {
         }
         
     })
+
+    observeEvent(input$run_data, {
+        cleanup_analysis_par()
+        default_data <<- paste0(c("agriculture", "industry", "politic"), ".tsv")
+        default_run <<- TRUE
+        getInfile()
+    })
     
-    
-    getInfile <- eventReactive(c(input$blocks, input$sep), {
+    getInfile <- eventReactive(c(input$blocks, input$run_data, input$sep), {
         # Return the list of blocks
-        
+
         # Load the blocks
-        paths <- paste(input$blocks$datapath, collapse = ",")
+        if (default_run) {
+            paths <- paste(paste0("../extdata/", default_data), collapse = ",")
+            names <- paste(default_data, collapse = ",")
+        } else {
+            paths <- paste(input$blocks$datapath, collapse = ",")
         
-        if (length(grep("xlsx?", paths)))
-            names <- NULL
-        else
-            names <- paste(input$blocks$name, collapse = ",")
+            if (length(grep("xlsx?", paths)))
+                names <- NULL
+            else
+                names <- paste(input$blocks$name, collapse = ",")
+            default_data <<- NULL
+        }
         
+        default_run <<- FALSE
         cleanup_analysis_par()
         blocks_unscaled <- showWarn(
                     tryCatch({
@@ -1555,8 +1571,8 @@ server <- function(input, output, session) {
                 toggle(id = "run_crossval_single", condition = !is.null(rgcca_out$call$response))
                 updateTabsetPanel(session, "navbar", selected = "Connection")
                 save_connection(rgcca_out$call$connection)
-                # for (i in c('bootstrap_save', 'fingerprint_save', 'corcircle_save',
-                # 'samples_save', 'ave_save')) setToggleSaveButton(i)
+                for (i in c('bootstrap_save', 'fingerprint_save', 'corcircle_save', 'samples_save'))
+                    hide(i)
                 show("connection_save")
                 save(rgcca_out, file = "rgcca_result.RData")
             } else {
