@@ -358,11 +358,7 @@ server <- function(input, output, session) {
             ui <- shinyInput_label_embed(
                 ui,
                 icon("question") %>%
-                    bs_embed_tooltip(title = "One or multiple CSV files
-                    containing a matrix with : (i) quantitative values only
-                    (decimal should be separated by '.'), (ii) the samples in
-                    lines (should be labelled in the 1rst column) and (iii)
-                    variables in columns (should have a header)")
+                    bs_embed_tooltip(title = "One or multiple CSV files containing a matrix with : (i) quantitative values only (decimal should be separated by '.'), (ii) the samples in lines (should be labelled in the 1rst column) and (iii) variables in columns (should have a header)")
             )
         
         return(ui)
@@ -384,8 +380,7 @@ server <- function(input, output, session) {
             ui <- shinyInput_label_embed(
                 ui,
                 icon("question") %>%
-                    bs_embed_tooltip(title = "Character used to separate the
-                    column in the dataset")
+                    bs_embed_tooltip(title = "Character used to separate the column in the dataset")
             )
         
         return(ui)
@@ -400,9 +395,7 @@ server <- function(input, output, session) {
             ui <- shinyInput_label_embed(
                 ui,
                 icon("question") %>%
-                    bs_embed_tooltip(title = "A data centering step is always
-                    performed. If ticked, each block is normalised and divided
-                    by the square root of its number of variables.")
+                    bs_embed_tooltip(title = "A data centering step is always performed. If ticked, each block is normalised and divided by the square root of its number of variables.")
             )
         
         return(ui)
@@ -423,10 +416,7 @@ server <- function(input, output, session) {
                 ui,
                 icon("question") %>%
                     bs_embed_tooltip(
-                        title = "To tune the sparsity coefficient (if the model is sparse) or tau
-                        (otherwise), we observe the deviation between the model and a set of models
-                        where the lines of each block are permuted. The model with the best
-                        combination of parameters is the one with the highest deviation.")
+                        title = "To tune the sparsity coefficient (if the model is sparse) or tau (otherwise), we observe the deviation between the model and a set of models where the lines of each block are permuted. The model with the best combination of parameters is the one with the highest deviation.")
             )
         
         return(ui)
@@ -446,9 +436,7 @@ server <- function(input, output, session) {
                 ui,
                 icon("question") %>%
                     bs_embed_tooltip(
-                        title = "By taking several random samples from the dataset (bootstrap),
-                        the importance of the variables may vary. The variables that are most
-                        often selected are those that are retained.")
+                        title = "By taking several random samples from the dataset (bootstrap), the importance of the variables may vary. The variables that are most often selected are those that are retained.")
             )
         
         return(ui)
@@ -481,14 +469,7 @@ server <- function(input, output, session) {
                 ui,
                 icon("question") %>%
                     bs_embed_tooltip(
-                        title = "To tune the sparsity coefficient (if the model is sparse) or
-                        tau (otherwise), in supervised mode, we observe the performance (RMSE)
-                        of a model from which samples were randomly drawn. These samples
-                        can be divided into k folds where the model will be tested on each fold
-                        and trained on the others. For small datasets (<30 samples), it is
-                        recommended to use as many folds as there are samples (leave-one-out;
-                        loo). The best combination of parameters is the one where, on average,
-                        the samples perform best.")
+                        title = "To tune the sparsity coefficient (if the model is sparse) or tau (otherwise), in supervised mode, we observe the performance (RMSE) of a model from which samples were randomly drawn. These samples can be divided into k folds where the model will be tested on each fold and trained on the others. For small datasets (<30 samples), it is recommended to use as many folds as there are samples (leave-one-out; loo). The best combination of parameters is the one where, on average, the samples perform best.")
             )
         
         return(ui)
@@ -561,14 +542,7 @@ server <- function(input, output, session) {
                 icon("question") %>%
                     bs_embed_tooltip(
                         title =
-                            "Link (i.e. scheme) function for covariance
-                            maximization is calculated with: the identity
-                            function (horst scheme), the absolute values
-                            (centroid scheme), the squared values (factorial
-                            scheme). Only, the horst scheme penalizes structural
-                            negative correlation. The factorial scheme
-                            discriminates more strongly the blocks than the
-                            centroid one."
+                            "Link (i.e. scheme) function for covariance maximization is calculated with: the identity function (horst scheme), the absolute values (centroid scheme), the squared values (factorial scheme). Only, the horst scheme penalizes structural negative correlation. The factorial scheme discriminates more strongly the blocks than the centroid one."
                     )
             )
         
@@ -587,15 +561,7 @@ server <- function(input, output, session) {
                 icon("question") %>%
                     bs_embed_tooltip(
                         title =
-                            "If ticked, a superblock is introduced. This
-                            superblock is defined as a concatenation of all the
-                            other blocks. The space spanned by global components
-                            is viewed as a compromise space that integrated
-                            all the modalities and facilitates the
-                            visualization of the results and their
-                            interpretation. If unchecked, a connection file
-                            could be used. Otherwise, all blocks are assumed
-                            to be connected."
+                            "If ticked, a superblock is introduced. This superblock is defined as a concatenation of all the other blocks. The space spanned by global components is viewed as a compromise space that integrated all the modalities and facilitates the visualization of the results and their interpretation. If unchecked, a connection file could be used. Otherwise, all blocks are assumed to be connected."
                     )
             )
         
@@ -613,11 +579,7 @@ server <- function(input, output, session) {
             ui <- shinyInput_label_embed(
                 ui,
                 icon("question") %>%
-                    bs_embed_tooltip(title = "The design matrix is a symmetric
-                    matrix of the length of the number of blocks describing
-                    the connections between them. Two values are accepted :
-                    '1' for a connection between two blocks, or '0' otherwise.
-                    By default, all the blocks are connected together.")
+                    bs_embed_tooltip(title = "The design matrix is a symmetric matrix of the length of the number of blocks describing the connections between them. Two values are accepted : '1' for a connection between two blocks, or '0' otherwise. By default, all the blocks are connected together.")
             )
         
         conditionalPanel(
@@ -634,10 +596,7 @@ server <- function(input, output, session) {
             ui <- shinyInput_label_embed(
                 ui,
                 icon("question") %>%
-                    bs_embed_tooltip(title = "To color the sample plot.
-                    A CSV file containing either : (i) an only column with a
-                    qualitative or a quantitative variable; (ii) multiple
-                    columns corresponding to a disjunctive table")
+                    bs_embed_tooltip(title = "To color the sample plot. A CSV file containing either : (i) an only column with a qualitative or a quantitative variable; (ii) multiple columns corresponding to a disjunctive table")
             )
         
         return(ui)
@@ -1226,7 +1185,7 @@ server <- function(input, output, session) {
                 )
         )
         
-        if (length(response) < 1)
+        if (length(response) <= 1)
             response <- NULL -> response_file
         
         return(response)
