@@ -21,11 +21,10 @@ jobs:
         with:
           extra-packages: rcmdcheck
 
-#      - name: Install additional dependencies
-#        run : |
-#          install.packages(c("pbapply", "gridExtra", "ggrepel", "igraph"))
-#          remotes::install_deps(dependencies = TRUE)
-#        shell: Rscript {0}
+      - name: Install additional dependencies
+        run : |
+          install.packages(c("pbapply", "gridExtra", "ggrepel", "igraph"))
+          remotes::install_deps(dependencies = TRUE)
 
       - uses: r-lib/actions/check-r-package@v1
 
@@ -39,5 +38,5 @@ jobs:
       - name: Test CLI
         run: |
           Rscript inst/launcher.R -h
-           Rscript inst/launcher.R -d inst/extdata/agriculture.tsv
-           ls -larth
+          Rscript inst/launcher.R -d inst/extdata/agriculture.tsv
+          ls -larth
