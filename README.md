@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/ecamenen-icm/rgcca-ui.svg?branch=develop)](https://travis-ci.com/ecamenen-icm/rgcca-ui)
 [![Codecov test coverage](https://codecov.io/gh/ecamenen-icm/rgcca-ui/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecamenen-icm/rgcca-ui?branch=develop)
+[![R build status](https://github.com/ecamenen/rgcca-ui/workflows/R-CMD-check/badge.svg)](https://github.com/ecamenen/rgcca-ui/actions)
 <!-- badges: end -->
   
 ##### Version: 1.0.0
