@@ -22,9 +22,7 @@ jobs:
           extra-packages: rcmdcheck
 
       - name: Install additional dependencies
-        run : |
-          R -e "install.packages(c('pbapply', 'gridExtra', 'ggrepel', 'igraph'))"
-#          R -e "remotes::install_deps(dependencies = TRUE)"
+        run: R -e "install.packages(c('pbapply', 'gridExtra', 'ggrepel', 'igraph'))"
 
       - uses: r-lib/actions/check-r-package@v1
 
