@@ -29,3 +29,9 @@ jobs:
         with:
           name: ${{ runner.os }}-r${{ matrix.config.r }}-results
           path: check
+      
+      - name: Test CLI
+        run: |
+          Rscript inst/launcherR -h
+          Rscript inst/launcherR -d inst/extdata/agriculturetsv
+          ls -larth
