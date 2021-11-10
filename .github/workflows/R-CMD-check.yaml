@@ -23,8 +23,8 @@ jobs:
 
       - name: Install additional dependencies
         run : |
-          install.packages(c("pbapply", "gridExtra", "ggrepel", "igraph"))
-          remotes::install_deps(dependencies = TRUE)
+          R - e 'install.packages(c("pbapply", "gridExtra", "ggrepel", "igraph"))'
+          R -e 'remotes::install_deps(dependencies = TRUE)'
 
       - uses: r-lib/actions/check-r-package@v1
 
@@ -39,4 +39,5 @@ jobs:
         run: |
           Rscript inst/launcher.R -h
           Rscript inst/launcher.R -d inst/extdata/agriculture.tsv
+          Rscript -e "covr::codecov()"
           ls -larth
