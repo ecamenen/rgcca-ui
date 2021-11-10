@@ -32,7 +32,6 @@ jobs:
 
       - name: Test CLI
         run: |
-          ls -larth
-          Rscript inst/launcherR -h
-          Rscript inst/launcherR -d inst/extdata/agriculturetsv
+          Rscript inst/launcher.R -h
+          Rscript inst/launcher.R -d inst/extdata/agriculturetsv
           ls -larth
