@@ -15,7 +15,10 @@ Depends:
     RGCCA,
     R (>= 3.3)
 Suggests:
-    testthat
+    testthat,
+    covr,
+    knitr,
+    rmarkdown
 RoxygenNote: 7.1.1
 Imports:
     devtools,
@@ -23,5 +26,12 @@ Imports:
     shiny,
     shinyjs,
     DT,
-    optparse
+    optparse,
+    plotly,
+    methods,
+    visNetwork,
+    magrittr,
+    utils,
+    graphics
 biocViews: Visualization, PrincipalComponent, DimensionReduction, StructuralEquationModels
+VignetteBuilder: knitr

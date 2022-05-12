@@ -1,0 +1,20 @@
+language: R
+sudo: false
+cache: packages
+
+r:
+- bioc-release
+#- 3.6
+#- 3.5
+#- 3.4
+#- 3.3
+
+after_success:
+- tar -C .. -xvf *tar.gz
+- Rscript -e 'covr::package_coverage(quiet = FALSE)'
+- Rscript -e 'covr::codecov()'
+
+after_script:
+- Rscript inst/launcher.R -h
+- Rscript inst/launcher.R -d inst/extdata/agriculture.tsv
+- ls -larth

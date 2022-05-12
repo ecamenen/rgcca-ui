@@ -7,72 +7,33 @@
 # Abstract: Performs multi-variate analysis (PCA, CCA, PLS, R/SGCCA, etc.)
 # and produces textual and graphical outputs (e.g. variables and samples
 # plots).
+#' The application User-Interface
+#' 
+#' @param request Internal parameter for `{shiny}`.
+#' @noRd
 
 rm(list = ls())
 options(shiny.maxRequestSize = 30 * 1024 ^ 2)
 
+BSPLUS <- R.Version()$minor >= 3
 setInfo <- function(., text) {
     shinyInput_label_embed(
         icon("question") %>%
             bs_embed_tooltip(title = text))
 }
 
-# Global variables
-one_block <<- c(`Principal Component Analysis` = "PCA")
-two_blocks <<- c(
-        `Canonical Correlation Analysis` = 'CCA',
-        `Interbattery Factor Analysis` = "IFA",
-        `Partial Least Squares Regression` = 'PLS',
-        `Redundancy analysis` = 'RA'
-    )
-multiple_blocks  <<- c(
-        `Regularized Generalized CCA (RGCCA)` = 'RGCCA',
-        `Sparse Generalized CCA (SGCCA)` = 'SGCCA',
-        `SUM of CORrelations method` = 'SUMCOR',
-        `Sum of SQuared CORrelations method` = 'SSQCOR',
-        `Sum of ABSolute value CORrelations method` = 'SABSCOR',
-        `SUM of COVariances method` = 'SUMCOV',
-        `Sum of SQuared COVariances method` = 'SSQCOV',
-        `Sum of ABSolute value COVariances method` = 'SABSCOV',
-        `MAXBET` = 'MAXBET',
-        `MAXBETB` = 'MAXBET-B'
-    )
-multiple_blocks_super  <<- c(
-        `Generalized CCA (GCCA)` = 'GCCA',
-        `Hierarchical PCA` = 'HPCA',
-        `Multiple Factor Analysis` = 'MFA'
-    )
-analyse_methods  <<- list(one_block, two_blocks, multiple_blocks, multiple_blocks_super)
-reac_var  <<- reactiveVal()
-id_block_y <<- id_block <<- id_block_resp <<- analysis <<- connection <<- perm <<- boot <<-
-boot <<- analysis_type <<- crossval <<- selected.var <<- crossval <<- blocks_without_superb <<- NULL
-clickSep <<- FALSE
-if_text <<- TRUE
-compx <<- 1
-nb_comp <<- compy <<- 2
-nb_mark <<- 100
-BSPLUS <<- R.Version()$minor >= 3
-ax2 <<- list(linecolor = "white",
-        tickfont = list(size = 10, color = "grey"))
-CEX_LAB <<- 15
-CEX_MAIN <<- 15
-CEX_POINT <<- 3
-CEX_SUB <<- 10
-CEX_AXIS <<- 10
-CEX <<- 1
-
 load_libraries <- function(librairies) {
-  for (l in librairies) {
-    if (!(l %in% installed.packages()[, "Package"]))
-      utils::install.packages(l, repos = "cran.us.r-project.org")
+    for (l in librairies) {
+        if (!(l %in% installed.packages()[, "Package"]))
+            utils::install.packages(l, repos = "cran.us.r-project.org")
     suppressPackageStartupMessages(
-      library(
-        l,
-        character.only = TRUE,
-        warn.conflicts = FALSE,
-        quietly = TRUE
-      ))
-  }
+        library(
+            l,
+            character.only = TRUE,
+            warn.conflicts = FALSE,
+            quietly = TRUE
+        ))
+    }
 }
 
 load_libraries(c(
@@ -89,7 +50,7 @@ load_libraries(c(
 ))
 
 if (!("RGCCA" %in% installed.packages()[, "Package"]) ||
-    as.double(paste(unlist(packageVersion("RGCCA"))[1:2], collapse = ".")) < 3.0) {
+    as.double(paste(unlist(packageVersion("RGCCA"))[seq(2)], collapse = ".")) < 3.0) {
     devtools::install_github("rgcca-factory/RGCCA", ref = "3.0.0")
 }
 
@@ -100,32 +61,45 @@ for (i in all_funcs)
 if (BSPLUS) {
     if (!("bsplus" %in% installed.packages()[, "Package"]))
         devtools::install_github("ijlyttle/bsplus", upgrade = "never")
-    library("bsplus", warn.conflicts = FALSE, quiet = TRUE)
+    library("bsplus", warn.conflicts = FALSE, quietly = TRUE)
+}
+
+customDownloadbutton <- function(outputId, label = "Download"){
+    tags$a(id = outputId, class = "btn btn-default shiny-download-link", href = "", 
+           target = "_blank", download = NA, icon("camera"), label)
 }
 
 ui <- fluidPage(
     titlePanel("R/SGCCA - The Shiny graphical interface"),
     tags$div(
         tags$p(
-            "Etienne CAMENEN, Ivan MOSZER, Arthur TENENHAUS (",
-            tags$a(href = "arthur.tenenhaus@l2s.centralesupelec.fr",
-            "arthur.tenenhaus@l2s.centralesupelec.fr"),
-            ")"
+                tags$a(
+                    href = "mailto:etienne.camenen@gmail.com",
+                    "Etienne CAMENEN,"
+                ),
+            "Ivan MOSZER, Arthur TENENHAUS"
         ),
         tags$i("Multi-block data analysis concerns the analysis of several sets of variables (blocks) observed on the same group of samples. The main aims of the RGCCA package are: to study the relationships between blocks and to identify subsets of variables of each block which are active in their relationships with the other blocks."),
         tags$br(), tags$br()
     ),
-    tags$a(href = "https://github.com/rgcca-factory/RGCCA/blob/release/3.0.0/inst/shiny/tutorialShiny.md", "Go to the tutorial"),
+    tags$a(href = "https://github.com/ecamenen/rgcca-ui/blob/master/inst/shiny/tutorialShiny.md#description", "Go to the tutorial"),
     tags$strong("|"),
     tags$a(href = "https://www.youtube.com/watch?v=QCkEBsoP-tc", "Watch a demo", target = "_blank"),
     tags$br(), tags$br(),
     tags$style(".fa-camera {color:#c7c7c7}"),
     tags$style(".fa-camera:hover {color:#7c7c7c}"),
-    tags$style("#connection_save, #ave_save {border-color:white; left: 0%}"),
-    tags$style("#connection_save:hover, #ave_save:hover {background-color:white}"),
-    tags$style("#connection_save:focus, #ave_save:focus {outline:none; background-color:white}"),
-    tags$style("#connection_save:active, #ave_save:active {box-shadow:none}"),
+    tags$style("#connection_save, #ave_save, #bootstrap_t_save, #permutation_t_save {border-color:white; left: 0%}"),
+    tags$style("#connection_save:hover, #ave_save:hover, #bootstrap_t_save:hover, #permutation_t_save:hover {background-color:white}"),
+    tags$style("#connection_save:focus, #ave_save:focus, #bootstrap_t_save:focus, #permutation_t_save:focus {outline:none; background-color:white}"),
+    tags$style("#connection_save:active, #ave_save:active, #bootstrap_t_save:active, #permutation_t_save:active {box-shadow:none}"),
     tags$style(".js-plotly-plot .plotly .modebar {left: 0%}"),
+    # tags$style(
+    #     HTML(".shiny-notification {
+    #         position:fixed;
+    #         top: calc(90%);
+    #         left: calc(50%);
+    #         }")
+    #     ),
     useShinyjs(),
     sidebarLayout(sidebarPanel(
         tabsetPanel(
@@ -138,25 +112,25 @@ ui <- fluidPage(
                     inputId = "header",
                     label = "Consider first row as header",
                     value = TRUE
-                )
+                ),
+                actionButton(
+                    inputId = "run_data",
+                    label = "Use a default dataset")
             ),
-
 
             # Analysis parameters
 
             tabPanel(
                 "RGCCA",
                 uiOutput("analysis_type_custom"),
-
                 uiOutput("scale_custom"),
                 radioButtons(
                     "init",
                     label = "Mode of initialization",
                     choices = c(SVD = "svd",
-                                Random = "random"),
+                        Random = "random"),
                     selected = "svd"
                 ),
-
                 uiOutput("superblock_custom"),
                 checkboxInput(
                     inputId = "supervised",
@@ -165,16 +139,14 @@ ui <- fluidPage(
                 ),
                 conditionalPanel(
                     condition = "input.supervised || input.analysis_type == 'RA'",
-                    uiOutput("blocks_names_response")),
+                uiOutput("blocks_names_response")),
                 uiOutput("connection_custom"),
-
                 checkboxInput(
                     inputId = "each_ncomp",
                     label = "Number of components for each block",
                     value = FALSE
                 ),
                 uiOutput("nb_compcustom"),
-
                 uiOutput("tau_opt_custom"),
                 uiOutput("each_tau_custom"),
                 uiOutput("tau_custom"),
@@ -201,7 +173,7 @@ ui <- fluidPage(
                     label = "Run cross-validation"),
                 uiOutput("nperm_custom"),
                 actionButton(inputId = "run_perm",
-                    label = "Run permutation"),
+                        label = "Run permutation"),
                 # sliderInput(
                 #     inputId = "power",
                 #     label = "Power of the factorial",
@@ -216,7 +188,7 @@ ui <- fluidPage(
                     label = "Run analysis"),
                 uiOutput("nboot_custom"),
                 actionButton(inputId = "run_boot",
-                    label = "Run bootstrap"),
+                        label = "Run bootstrap"),
                 actionButton(
                     inputId = "run_crossval_single",
                     label = "Evaluate the model")
@@ -263,9 +235,8 @@ ui <- fluidPage(
                 ),
                 uiOutput("b_x_custom"),
                 uiOutput("b_y_custom"),
-                actionButton(inputId = "save_all", label = "Save all")
+                customDownloadbutton(outputId = "save_all", label = "Save all")
             )
-
         )
     ),
 
@@ -275,55 +246,52 @@ ui <- fluidPage(
             id = "navbar",
             tabPanel(
                 "Connection",
-                actionButton("connection_save", "", icon = icon("camera")),
+                customDownloadbutton("connection_save", ""),
                 visNetworkOutput("connectionPlot")
             ),
             tabPanel(
                 "AVE",
-                actionButton("ave_save", "", icon = icon("camera")),
+                customDownloadbutton("ave_save", ""),
                 plotOutput("AVEPlot")
             ),
             tabPanel(
                 "Samples",
                 plotlyOutput("samplesPlot", height = 500),
-                actionButton("samples_save", "Save")
+                customDownloadbutton("samples_save", "Save")
             ),
             tabPanel(
                 "Corcircle",
                 plotlyOutput("corcirclePlot", height = 500),
-                actionButton("corcircle_save", "Save")
+                customDownloadbutton("corcircle_save", "Save")
             ),
             tabPanel(
                 "Fingerprint",
                 plotlyOutput("fingerprintPlot", height = 700),
-                actionButton("fingerprint_save", "Save")
+                customDownloadbutton("fingerprint_save", "Save")
             ),
             tabPanel(
                 "Bootstrap",
                 plotlyOutput("bootstrapPlot", height = 700),
-                actionButton("bootstrap_save", "Save")
+                customDownloadbutton("bootstrap_save", "Save")
             ),
             tabPanel(
                 "Bootstrap Summary",
-                DT::dataTableOutput("bootstrapTable"),
-                actionButton("bootstrap_t_save", "Save")
+                customDownloadbutton("bootstrap_t_save", ""),
+                DT::dataTableOutput("bootstrapTable")
             ),
             tabPanel(
                 "Permutation",
                 plotlyOutput("permutationPlot", height = 700)
-                # actionButton("permutation_save", "Save")
             ),
             tabPanel(
                 "Permutation Summary",
-                dataTableOutput("permutationTable"),
-                actionButton("permutation_t_save", "Save")
+                customDownloadbutton("permutation_t_save", ""),
+                dataTableOutput("permutationTable")
             ),
             tabPanel(
                 "Cross-validation",
                 plotlyOutput("cvPlot", height = 700)
-                #actionButton("cv_save", "Save")
             )
         )
-
     ))
 )
